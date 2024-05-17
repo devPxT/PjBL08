@@ -5,7 +5,6 @@ public class Vestimenta extends Produto {
     private String marca;
 
     public Vestimenta(int idProduto, double preco, String genero, String material, String cor, String marca) {
-        super(idProduto, preco);
         this.genero = genero;
         this.material = material;
         this.cor = cor;

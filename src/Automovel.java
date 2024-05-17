@@ -4,7 +4,6 @@ public class Automovel extends Produto {
     private int ano;
 
     public Automovel(int idProduto, double preco, String marca, String modelo, int ano) {
-        super(idProduto, preco);
         this.marca = marca;
         this.modelo = modelo;
         this.ano = ano;

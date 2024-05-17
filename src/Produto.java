@@ -2,11 +2,6 @@ public abstract class Produto {
     private int idProduto;
     private double preco;
 
-    public Produto(int idProduto, double preco) {
-        this.idProduto = idProduto;
-        this.preco = preco;
-        //Main.incrementNextId();
-    }
 
     public int getIdProduto() {
         return idProduto;
