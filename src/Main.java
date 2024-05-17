@@ -1,8 +1,15 @@
 import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
+    private static final String FILE_NAME = "users.txt";
+
     private static List<Produto> estoque = new ArrayList<>();
     private static List<Produto> carrinho = new ArrayList<>();
     private static int nextId = 1;
@@ -15,13 +22,147 @@ public class Main {
         nextId++;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int choice;
+        boolean loggedIn = false;
 
         // estoque.add(new Roupa(50.0, "Masculino", "Algodão", "Azul", "Marca A"));
         // estoque.add(new Computador(2000.0, "Windows 10", 500, "Wi-Fi", 12, true));
         // estoque.add(new Carro(50000.0, "Marca X", "Modelo Y", 2022, 4, 500.0f));
+
+        while (!loggedIn) {
+            System.out.println("\n=== Menu de Login e Cadastro ===");
+            System.out.println("1. Login");
+            System.out.println("2. Cadastro");
+            System.out.println("0. Encerrar Programa");
+            System.out.print("Escolha uma opção: ");
+
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Limpar o buffer de entrada
+
+            switch (choice) {
+                case 1:
+                    loggedIn = login(scanner);
+                    break;
+                case 2:
+                    cadastrar(scanner);
+                    break;
+                case 0:
+                    System.out.println("Encerrando o programa...");
+                    return;
+                default:
+                    System.out.println("Opção inválida! Por favor, tente novamente.");
+            }
+        }
+
+        // Após o login bem-sucedido, mostrar o menu principal
+        menuPrincipal(scanner);
+    }
+
+    // public static void main(String[] args) throws Exception {
+    //     Scanner scanner = new Scanner(System.in);
+    //     int choice;
+    //     do {
+    //         System.out.println("\n=== Menu Principal ===");
+    //         System.out.println("1. Listar Produtos");
+    //         System.out.println("2. Buscar Produto por ID");
+    //         System.out.println("3. Adicionar Produto ao Carrinho");
+    //         System.out.println("4. Visualizar Carrinho");
+    //         System.out.println("5. Cadastrar Produto");
+    //         System.out.println("0. Encerrar Programa");
+    //         System.out.println();
+    //         System.out.print("Escolha uma opção: ");
+    //         try {
+    //             choice = scanner.nextInt();
+    //             switch (choice) {
+    //                 case 1:
+    //                     listarEstoque();
+    //                     break;
+    //                 case 2:
+    //                     buscarProdutoPorId(scanner);
+    //                     break;
+    //                 case 3:
+    //                     adicionarProdutoAoCarrinho(scanner);
+    //                     break;
+    //                 case 4:
+    //                     visualizarCarrinho();
+    //                     break;
+    //                 case 5:
+    //                     cadastrarProduto(scanner);
+    //                     break;
+    //                 case 0:
+    //                     System.out.println("Encerrando o programa...");
+    //                     break;
+    //                 default:
+    //                     System.out.println("Opção inválida! Por favor, tente novamente.");
+    //             }
+    //         } catch (Exception e) {
+    //             System.out.println("Entrada inválida! Por favor, insira um número.");
+    //             scanner.next(); // Limpar o buffer de entrada
+    //             choice = -1; // Define uma opção inválida para continuar o loop
+    //         }
+    //     } while (choice != 0);
+    //     scanner.close();
+    // }
+
+    private static boolean login(Scanner scanner) {
+        int userType = getUserType(scanner);
+        System.out.print("Digite o login: ");
+        String login = scanner.nextLine();
+        System.out.print("Digite a senha: ");
+        String senha = scanner.nextLine();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] user = line.split(",");
+                if (Integer.parseInt(user[0]) == userType && user[1].equals(login) && user[2].equals(senha)) {
+                    System.out.println("Login bem-sucedido!");
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo de usuários.");
+        }
+
+        System.out.println("Login ou senha inválidos!");
+        return false;
+    }
+
+    private static void cadastrar(Scanner scanner) {
+        int userType = getUserType(scanner);
+        System.out.print("Digite o login: ");
+        String login = scanner.nextLine();
+        System.out.print("Digite a senha: ");
+        String senha = scanner.nextLine();
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            bw.write(userType + "," + login + "," + senha);
+            bw.newLine();
+            System.out.println("Cadastro realizado com sucesso!");
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar os dados do usuário.");
+        }
+    }
+
+    private static int getUserType(Scanner scanner) {
+        int userType;
+        do {
+            System.out.println("1. Vendedor");
+            System.out.println("2. Cliente");
+            System.out.print("Digite o tipo de usuário (1 ou 2): ");
+            userType = scanner.nextInt();
+            scanner.nextLine(); // Limpar o buffer de entrada
+            if (userType != 1 && userType != 2) {
+                System.out.println("Entrada inválida! Por favor, insira 1 para Vendedor ou 2 para Cliente.");
+            }
+        } while (userType != 1 && userType != 2);
+        return userType;
+    }
+
+    private static void menuPrincipal(Scanner scanner) {
+        int choice;
 
         do {
             // Menu principal
@@ -32,7 +173,6 @@ public class Main {
             System.out.println("4. Visualizar Carrinho");
             System.out.println("5. Cadastrar Produto");
             System.out.println("0. Encerrar Programa");
-            System.out.println();
             System.out.print("Escolha uma opção: ");
 
             try {
@@ -66,9 +206,9 @@ public class Main {
             }
 
         } while (choice != 0);
-
-        scanner.close();
     }
+
+
 
     private static void listarEstoque() {
         System.out.println("\n=== Produtos em Estoque ===");
