@@ -266,6 +266,7 @@ public class Main {
         System.out.println("3. Celular");
         System.out.println("4. Carro");
         System.out.println("5. Moto");
+        System.out.println("6. Eletrodoméstico");
         System.out.print("Opção: ");
     
         int opcao = scanner.nextInt();
@@ -290,6 +291,10 @@ public class Main {
                 break;
             case 5:
                 cadastrarMoto(scanner);
+                incrementNextId();
+                break;
+            case 6:
+                cadastrarEletroDomestico(scanner);
                 incrementNextId();
                 break;
             default:
@@ -431,5 +436,27 @@ public class Main {
         estoque.add(p);
     
         System.out.println("Moto cadastrada com sucesso.");
+    }
+
+    public static void cadastrarEletroDomestico(Scanner scanner) {
+        System.out.print("Informe o preço: ");
+        double preco = scanner.nextDouble();
+        scanner.nextLine();
+    
+        System.out.print("Informe a marca: ");
+        String marca = scanner.nextLine();
+    
+        System.out.print("Informe o modelo: ");
+        String modelo = scanner.nextLine();
+    
+        System.out.print("Informe o volume em litros: ");
+        float volume = scanner.nextFloat();
+        scanner.nextLine();
+    
+        System.out.print("Informe a Eficiência Energética: ");
+        String eficienciaEnergetica = scanner.nextLine();
+    
+        Produto p = new EletroDomestico(getNextId(), preco, marca, modelo, volume, eficienciaEnergetica);
+        estoque.add(p);
     }
 }
