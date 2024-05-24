@@ -25,9 +25,9 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int choice;
-        boolean loggedIn = false;
+        boolean logado = false;
 
-        while (!loggedIn) {
+        while (logado == false) {
             System.out.println("\n=== Menu de Login e Cadastro ===");
             System.out.println("1. Login");
             System.out.println("2. Cadastro");
@@ -39,10 +39,19 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    loggedIn = login(scanner);
+                    try {
+                        logado = login(scanner);
+                    } catch (IOException e) {
+                        System.out.println("Arquivo não encontrado.");
+                    }
                     break;
                 case 2:
-                    cadastrar(scanner);
+                    try {
+                        cadastrar(scanner);
+                    }
+                    catch (IOException e) {
+                        System.out.println("Arquivo não encontrado.");
+                    }
                     break;
                 case 0:
                     System.out.println("Encerrando o programa...");
@@ -56,79 +65,87 @@ public class Main {
         menuPrincipal(scanner);
     }
 
-    private static boolean login(Scanner scanner) {
-        int userType = getUserType(scanner);
+    private static boolean login(Scanner scanner) throws IOException {
+        int tipoUsuario = getTipoUsuario(scanner);
         System.out.print("Digite o login: ");
         String login = scanner.nextLine();
         System.out.print("Digite a senha: ");
         String senha = scanner.nextLine();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] user = line.split(",");
-                if (Integer.parseInt(user[0]) == userType && user[1].equals(login) && user[2].equals(senha)) {
-                    System.out.println("Login bem-sucedido!");
-                    return true;
-                }
+        // try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
+        BufferedReader br = new BufferedReader(new FileReader(Users_File));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] user = line.split(",");
+            if (Integer.parseInt(user[0]) == tipoUsuario && user[1].equals(login) && user[2].equals(senha)) {
+                br.close();
+                System.out.println("Login bem-sucedido!");
+                return true;
             }
-        } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo de usuários.");
         }
-
+        // } catch (IOException e) {
+        //     System.out.println("Erro ao ler o arquivo de usuários.");
+        // }print
+        br.close();
         System.out.println("Login ou senha inválidos!");
         return false;
     }
 
-    private static void cadastrar(Scanner scanner) {
-        int userType = getUserType(scanner);
+    private static void cadastrar(Scanner scanner) throws IOException {
+        int tipoUsuario = getTipoUsuario(scanner);
         System.out.print("Digite o login: ");
         String login = scanner.nextLine();
-        System.out.print("Digite a senha: ");
-        String senha = scanner.nextLine();
 
-        if (usuarioExiste(userType, login)) {
+        if (isLoginRepetido(tipoUsuario, login) == true) {
             System.out.println("Login indisponível. Por favor, escolha um login diferente.");
             return;
         }
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(Users_File, true))) {
-            bw.write(userType + "," + login + "," + senha);
-            bw.newLine();
-            System.out.println("Cadastro realizado com sucesso!");
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar os dados do usuário.");
-        }
+        System.out.print("Digite a senha: ");
+        String senha = scanner.nextLine();
+
+        // try (BufferedWriter bw = new BufferedWriter(new FileWriter(Users_File, true))) {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(Users_File, true));
+        bw.write(tipoUsuario + "," + login + "," + senha);
+        bw.newLine();
+        bw.close();
+
+        System.out.println("Cadastro realizado com sucesso!");
+        // } catch (IOException e) {
+        //     System.out.println("Erro ao salvar os dados do usuário.");
+        // }
     }
 
-    private static boolean usuarioExiste(int userType, String login) {
+    private static boolean isLoginRepetido(int userType, String login) {
         try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] user = line.split(",");
                 if (Integer.parseInt(user[0]) == userType && user[1].equals(login)) {
+                    br.close();
                     return true;
                 }
             }
+            br.close();
         } catch (IOException e) {
             System.out.println("Erro ao ler o arquivo de usuários.");
         }
         return false;
     }
 
-    private static int getUserType(Scanner scanner) {
-        int userType;
+    private static int getTipoUsuario(Scanner scanner) {
+        int tipoUsuario;
         do {
             System.out.println("1. Vendedor");
             System.out.println("2. Cliente");
             System.out.print("Digite o tipo de usuário (1 ou 2): ");
-            userType = scanner.nextInt();
+            tipoUsuario = scanner.nextInt();
             scanner.nextLine(); // Limpar o buffer de entrada
-            if (userType != 1 && userType != 2) {
+            if (tipoUsuario != 1 && tipoUsuario != 2) {
                 System.out.println("Entrada inválida! Por favor, insira 1 para Vendedor ou 2 para Cliente.");
             }
-        } while (userType != 1 && userType != 2);
-        return userType;
+        } while (tipoUsuario != 1 && tipoUsuario != 2);
+        return tipoUsuario;
     }
 
     private static void menuPrincipal(Scanner scanner) {

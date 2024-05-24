@@ -1,6 +1,4 @@
-import java.io.IOException;
-
-public class ArquivoInvalido extends IOException {
+public class ArquivoInvalido extends Exception {
 
     public ArquivoInvalido(String mensagem) {
         super(mensagem);
