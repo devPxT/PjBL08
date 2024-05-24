@@ -11,9 +11,7 @@ public abstract class Produto {
         return preco;
     }
 
-    public void imprimeDescricao() {
-        System.out.println(toString());
-    }
+    public abstract void imprimeDescricao();
 
     @Override
     public String toString() {
