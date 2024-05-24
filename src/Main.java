@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private static final String FILE_NAME = "users.txt";
+    private static final String Users_File = "users.txt";
 
     private static List<Produto> estoque = new ArrayList<>();
     private static List<Produto> carrinho = new ArrayList<>();
@@ -26,10 +26,6 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int choice;
         boolean loggedIn = false;
-
-        // estoque.add(new Roupa(50.0, "Masculino", "Algodão", "Azul", "Marca A"));
-        // estoque.add(new Computador(2000.0, "Windows 10", 500, "Wi-Fi", 12, true));
-        // estoque.add(new Carro(50000.0, "Marca X", "Modelo Y", 2022, 4, 500.0f));
 
         while (!loggedIn) {
             System.out.println("\n=== Menu de Login e Cadastro ===");
@@ -60,52 +56,6 @@ public class Main {
         menuPrincipal(scanner);
     }
 
-    // public static void main(String[] args) throws Exception {
-    //     Scanner scanner = new Scanner(System.in);
-    //     int choice;
-    //     do {
-    //         System.out.println("\n=== Menu Principal ===");
-    //         System.out.println("1. Listar Produtos");
-    //         System.out.println("2. Buscar Produto por ID");
-    //         System.out.println("3. Adicionar Produto ao Carrinho");
-    //         System.out.println("4. Visualizar Carrinho");
-    //         System.out.println("5. Cadastrar Produto");
-    //         System.out.println("0. Encerrar Programa");
-    //         System.out.println();
-    //         System.out.print("Escolha uma opção: ");
-    //         try {
-    //             choice = scanner.nextInt();
-    //             switch (choice) {
-    //                 case 1:
-    //                     listarEstoque();
-    //                     break;
-    //                 case 2:
-    //                     buscarProdutoPorId(scanner);
-    //                     break;
-    //                 case 3:
-    //                     adicionarProdutoAoCarrinho(scanner);
-    //                     break;
-    //                 case 4:
-    //                     visualizarCarrinho();
-    //                     break;
-    //                 case 5:
-    //                     cadastrarProduto(scanner);
-    //                     break;
-    //                 case 0:
-    //                     System.out.println("Encerrando o programa...");
-    //                     break;
-    //                 default:
-    //                     System.out.println("Opção inválida! Por favor, tente novamente.");
-    //             }
-    //         } catch (Exception e) {
-    //             System.out.println("Entrada inválida! Por favor, insira um número.");
-    //             scanner.next(); // Limpar o buffer de entrada
-    //             choice = -1; // Define uma opção inválida para continuar o loop
-    //         }
-    //     } while (choice != 0);
-    //     scanner.close();
-    // }
-
     private static boolean login(Scanner scanner) {
         int userType = getUserType(scanner);
         System.out.print("Digite o login: ");
@@ -113,7 +63,7 @@ public class Main {
         System.out.print("Digite a senha: ");
         String senha = scanner.nextLine();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] user = line.split(",");
@@ -137,13 +87,33 @@ public class Main {
         System.out.print("Digite a senha: ");
         String senha = scanner.nextLine();
 
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+        if (usuarioExiste(userType, login)) {
+            System.out.println("Login indisponível. Por favor, escolha um login diferente.");
+            return;
+        }
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(Users_File, true))) {
             bw.write(userType + "," + login + "," + senha);
             bw.newLine();
             System.out.println("Cadastro realizado com sucesso!");
         } catch (IOException e) {
             System.out.println("Erro ao salvar os dados do usuário.");
         }
+    }
+
+    private static boolean usuarioExiste(int userType, String login) {
+        try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] user = line.split(",");
+                if (Integer.parseInt(user[0]) == userType && user[1].equals(login)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo de usuários.");
+        }
+        return false;
     }
 
     private static int getUserType(Scanner scanner) {
