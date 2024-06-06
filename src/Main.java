@@ -1,18 +1,21 @@
-import java.util.Scanner;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private static final String FILE_NAME = "users.txt";
-
+    private static final String USERS_FILE = "users.txt";
     private static List<Produto> estoque = new ArrayList<>();
     private static List<Produto> carrinho = new ArrayList<>();
     private static int nextId = 1;
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
+        });
+    }
 
     public static int getNextId() {
         return nextId;
@@ -22,144 +25,158 @@ public class Main {
         nextId++;
     }
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int choice;
-        boolean loggedIn = false;
+    static class LoginFrame extends JFrame {
+        private JTextField loginField;
+        private JPasswordField passwordField;
+        private JComboBox<String> userTypeComboBox;
 
-        // estoque.add(new Roupa(50.0, "Masculino", "Algodão", "Azul", "Marca A"));
-        // estoque.add(new Computador(2000.0, "Windows 10", 500, "Wi-Fi", 12, true));
-        // estoque.add(new Carro(50000.0, "Marca X", "Modelo Y", 2022, 4, 500.0f));
+        public LoginFrame() {
+            setTitle("Login");
+            setSize(400, 300);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
 
-        while (!loggedIn) {
-            System.out.println("\n=== Menu de Login e Cadastro ===");
-            System.out.println("1. Login");
-            System.out.println("2. Cadastro");
-            System.out.println("0. Encerrar Programa");
-            System.out.print("Escolha uma opção: ");
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(6, 2));
 
-            choice = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer de entrada
+            JLabel userTypeLabel = new JLabel("Tipo de Usuário:");
+            String[] userTypes = {"Vendedor", "Cliente"};
+            userTypeComboBox = new JComboBox<>(userTypes);
 
-            switch (choice) {
-                case 1:
-                    loggedIn = login(scanner);
-                    break;
-                case 2:
-                    cadastrar(scanner);
-                    break;
-                case 0:
-                    System.out.println("Encerrando o programa...");
-                    return;
-                default:
-                    System.out.println("Opção inválida! Por favor, tente novamente.");
-            }
+            JLabel loginLabel = new JLabel("Login:");
+            loginField = new JTextField();
+
+            JLabel passwordLabel = new JLabel("Senha:");
+            passwordField = new JPasswordField();
+
+            JButton loginButton = new JButton("Logar");
+
+            JButton registerButton = new JButton("Cadastrar");
+
+            registerButton.addActionListener(e -> {
+                try {
+                    cadastrar();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this, "Erro ao salvar os dados do usuário.");
+                }
+            });
+
+            panel.add(userTypeLabel);
+            panel.add(userTypeComboBox);
+            panel.add(loginLabel);
+            panel.add(loginField);
+            panel.add(passwordLabel);
+            panel.add(passwordField);
+            panel.add(registerButton);
+            panel.add(loginButton);
+
+            add(panel);
         }
 
-        // Após o login bem-sucedido, mostrar o menu principal
-        menuPrincipal(scanner);
+        private void cadastrar() throws IOException {
+            String login = loginField.getText();
+            String senha = new String(passwordField.getPassword());
+            String userType = (String) userTypeComboBox.getSelectedItem();
+
+            if (isLoginRepetido(userType, login)) {
+                JOptionPane.showMessageDialog(this, "Login indisponível. Por favor, escolha um login diferente.");
+                return;
+            }
+
+            createUsersFileIfNeed();
+
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(USERS_FILE, true))) {
+                bw.write(userType + "," + login + "," + senha);
+                bw.newLine();
+            }
+
+            JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
+        }
+
+        private boolean isLoginRepetido(String userType, String login) throws IOException {
+            createUsersFileIfNeed();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] user = line.split(",");
+                    if (user[0].equals(userType) && user[1].equals(login)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void createUsersFileIfNeed() throws IOException {
+            File file = new File(USERS_FILE);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        }
     }
+}
 
-    // public static void main(String[] args) throws Exception {
-    //     Scanner scanner = new Scanner(System.in);
-    //     int choice;
-    //     do {
-    //         System.out.println("\n=== Menu Principal ===");
-    //         System.out.println("1. Listar Produtos");
-    //         System.out.println("2. Buscar Produto por ID");
-    //         System.out.println("3. Adicionar Produto ao Carrinho");
-    //         System.out.println("4. Visualizar Carrinho");
-    //         System.out.println("5. Cadastrar Produto");
-    //         System.out.println("0. Encerrar Programa");
-    //         System.out.println();
-    //         System.out.print("Escolha uma opção: ");
-    //         try {
-    //             choice = scanner.nextInt();
-    //             switch (choice) {
-    //                 case 1:
-    //                     listarEstoque();
-    //                     break;
-    //                 case 2:
-    //                     buscarProdutoPorId(scanner);
-    //                     break;
-    //                 case 3:
-    //                     adicionarProdutoAoCarrinho(scanner);
-    //                     break;
-    //                 case 4:
-    //                     visualizarCarrinho();
-    //                     break;
-    //                 case 5:
-    //                     cadastrarProduto(scanner);
-    //                     break;
-    //                 case 0:
-    //                     System.out.println("Encerrando o programa...");
-    //                     break;
-    //                 default:
-    //                     System.out.println("Opção inválida! Por favor, tente novamente.");
-    //             }
-    //         } catch (Exception e) {
-    //             System.out.println("Entrada inválida! Por favor, insira um número.");
-    //             scanner.next(); // Limpar o buffer de entrada
-    //             choice = -1; // Define uma opção inválida para continuar o loop
-    //         }
-    //     } while (choice != 0);
-    //     scanner.close();
-    // }
+    //private static boolean login(Scanner scanner) throws IOException {
+        //int tipoUsuario = getTipoUsuario(scanner);
+        //System.out.print("Digite o login: ");
+        //String login = scanner.nextLine();
+        //System.out.print("Digite a senha: ");
+        //String senha = scanner.nextLine();
 
-    private static boolean login(Scanner scanner) {
-        int userType = getUserType(scanner);
-        System.out.print("Digite o login: ");
-        String login = scanner.nextLine();
-        System.out.print("Digite a senha: ");
-        String senha = scanner.nextLine();
+        // try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
+        //BufferedReader br = new BufferedReader(new FileReader(Users_File));
+        //String line;
+        //while ((line = br.readLine()) != null) {
+            //String[] user = line.split(",");
+            //if (Integer.parseInt(user[0]) == tipoUsuario && user[1].equals(login) && user[2].equals(senha)) {
+                //br.close();
+                //System.out.println("Login bem-sucedido!");
+                //return true;
+            //}
+        //}
+        // } catch (IOException e) {
+        //     System.out.println("Erro ao ler o arquivo de usuários.");
+        // }print
+        //br.close();
+        //System.out.println("Login ou senha inválidos!");
+        //return false;
+    //}
+            // } catch (IOException e) {
+            //     System.out.println("Erro ao salvar os dados do usuário.");
+            // }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+    /*private static boolean isLoginRepetido(int userType, String login) {
+        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] user = line.split(",");
-                if (Integer.parseInt(user[0]) == userType && user[1].equals(login) && user[2].equals(senha)) {
-                    System.out.println("Login bem-sucedido!");
+                if (Integer.parseInt(user[0]) == userType && user[1].equals(login)) {
+                    br.close();
                     return true;
                 }
             }
+            br.close();
         } catch (IOException e) {
             System.out.println("Erro ao ler o arquivo de usuários.");
         }
-
-        System.out.println("Login ou senha inválidos!");
         return false;
     }
 
-    private static void cadastrar(Scanner scanner) {
-        int userType = getUserType(scanner);
-        System.out.print("Digite o login: ");
-        String login = scanner.nextLine();
-        System.out.print("Digite a senha: ");
-        String senha = scanner.nextLine();
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
-            bw.write(userType + "," + login + "," + senha);
-            bw.newLine();
-            System.out.println("Cadastro realizado com sucesso!");
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar os dados do usuário.");
-        }
-    }
-
-    private static int getUserType(Scanner scanner) {
-        int userType;
-        do {
-            System.out.println("1. Vendedor");
-            System.out.println("2. Cliente");
-            System.out.print("Digite o tipo de usuário (1 ou 2): ");
-            userType = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer de entrada
-            if (userType != 1 && userType != 2) {
-                System.out.println("Entrada inválida! Por favor, insira 1 para Vendedor ou 2 para Cliente.");
-            }
-        } while (userType != 1 && userType != 2);
-        return userType;
-    }
+    //private static int getTipoUsuario(Scanner scanner) {
+        //int tipoUsuario;
+        //do {
+            //System.out.println("1. Vendedor");
+            //System.out.println("2. Cliente");
+            //System.out.print("Digite o tipo de usuário (1 ou 2): ");
+            //tipoUsuario = scanner.nextInt();
+            //scanner.nextLine(); // Limpar o buffer de entrada
+            //if (tipoUsuario != 1 && tipoUsuario != 2) {
+                //System.out.println("Entrada inválida! Por favor, insira 1 para Vendedor ou 2 para Cliente.");
+            //}
+        //} while (tipoUsuario != 1 && tipoUsuario != 2);
+        //return tipoUsuario;
+    //}
 
     private static void menuPrincipal(Scanner scanner) {
         int choice;
@@ -459,4 +476,4 @@ public class Main {
         Produto p = new EletroDomestico(getNextId(), preco, marca, modelo, volume, eficienciaEnergetica);
         estoque.add(p);
     }
-}
+}*/
