@@ -5,12 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-<<<<<<< HEAD
     private static final String USERS_FILE = "users.txt";
-=======
-    private static final String Users_File = "users.txt";
-
->>>>>>> b3a88a06ed38eb8fcb77f995243f922cebd5d1bf
     private static List<Produto> estoque = new ArrayList<>();
     private static List<Produto> carrinho = new ArrayList<>();
     private static int nextId = 1;
@@ -30,7 +25,6 @@ public class Main {
         nextId++;
     }
 
-<<<<<<< HEAD
     static class LoginFrame extends JFrame {
         private JTextField loginField;
         private JPasswordField passwordField;
@@ -44,25 +38,11 @@ public class Main {
 
             JPanel panel = new JPanel();
             panel.setLayout(new GridLayout(6, 2));
-=======
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int choice;
-        boolean logado = false;
-
-        while (logado == false) {
-            System.out.println("\n=== Menu de Login e Cadastro ===");
-            System.out.println("1. Login");
-            System.out.println("2. Cadastro");
-            System.out.println("0. Encerrar Programa");
-            System.out.print("Escolha uma opção: ");
->>>>>>> b3a88a06ed38eb8fcb77f995243f922cebd5d1bf
 
             JLabel userTypeLabel = new JLabel("Tipo de Usuário:");
             String[] userTypes = {"Vendedor", "Cliente"};
             userTypeComboBox = new JComboBox<>(userTypes);
 
-<<<<<<< HEAD
             JLabel loginLabel = new JLabel("Login:");
             loginField = new JTextField();
 
@@ -91,30 +71,6 @@ public class Main {
             panel.add(loginButton);
 
             add(panel);
-=======
-            switch (choice) {
-                case 1:
-                    try {
-                        logado = login(scanner);
-                    } catch (IOException e) {
-                        System.out.println("Arquivo não encontrado.");
-                    }
-                    break;
-                case 2:
-                    try {
-                        cadastrar(scanner);
-                    }
-                    catch (IOException e) {
-                        System.out.println("Arquivo não encontrado.");
-                    }
-                    break;
-                case 0:
-                    System.out.println("Encerrando o programa...");
-                    return;
-                default:
-                    System.out.println("Opção inválida! Por favor, tente novamente.");
-            }
->>>>>>> b3a88a06ed38eb8fcb77f995243f922cebd5d1bf
         }
 
         private void cadastrar() throws IOException {
@@ -161,7 +117,6 @@ public class Main {
     }
 }
 
-<<<<<<< HEAD
     //private static boolean login(Scanner scanner) throws IOException {
         //int tipoUsuario = getTipoUsuario(scanner);
         //System.out.print("Digite o login: ");
@@ -222,90 +177,6 @@ public class Main {
         //} while (tipoUsuario != 1 && tipoUsuario != 2);
         //return tipoUsuario;
     //}
-=======
-    private static boolean login(Scanner scanner) throws IOException {
-        int tipoUsuario = getTipoUsuario(scanner);
-        System.out.print("Digite o login: ");
-        String login = scanner.nextLine();
-        System.out.print("Digite a senha: ");
-        String senha = scanner.nextLine();
-
-        // try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
-        BufferedReader br = new BufferedReader(new FileReader(Users_File));
-        String line;
-        while ((line = br.readLine()) != null) {
-            String[] user = line.split(",");
-            if (Integer.parseInt(user[0]) == tipoUsuario && user[1].equals(login) && user[2].equals(senha)) {
-                br.close();
-                System.out.println("Login bem-sucedido!");
-                return true;
-            }
-        }
-        // } catch (IOException e) {
-        //     System.out.println("Erro ao ler o arquivo de usuários.");
-        // }print
-        br.close();
-        System.out.println("Login ou senha inválidos!");
-        return false;
-    }
-
-    private static void cadastrar(Scanner scanner) throws IOException {
-        int tipoUsuario = getTipoUsuario(scanner);
-        System.out.print("Digite o login: ");
-        String login = scanner.nextLine();
-
-        if (isLoginRepetido(tipoUsuario, login) == true) {
-            System.out.println("Login indisponível. Por favor, escolha um login diferente.");
-            return;
-        }
-
-        System.out.print("Digite a senha: ");
-        String senha = scanner.nextLine();
-
-        // try (BufferedWriter bw = new BufferedWriter(new FileWriter(Users_File, true))) {
-        BufferedWriter bw = new BufferedWriter(new FileWriter(Users_File, true));
-        bw.write(tipoUsuario + "," + login + "," + senha);
-        bw.newLine();
-        bw.close();
-
-        System.out.println("Cadastro realizado com sucesso!");
-        // } catch (IOException e) {
-        //     System.out.println("Erro ao salvar os dados do usuário.");
-        // }
-    }
-
-    private static boolean isLoginRepetido(int userType, String login) {
-        try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] user = line.split(",");
-                if (Integer.parseInt(user[0]) == userType && user[1].equals(login)) {
-                    br.close();
-                    return true;
-                }
-            }
-            br.close();
-        } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo de usuários.");
-        }
-        return false;
-    }
-
-    private static int getTipoUsuario(Scanner scanner) {
-        int tipoUsuario;
-        do {
-            System.out.println("1. Vendedor");
-            System.out.println("2. Cliente");
-            System.out.print("Digite o tipo de usuário (1 ou 2): ");
-            tipoUsuario = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer de entrada
-            if (tipoUsuario != 1 && tipoUsuario != 2) {
-                System.out.println("Entrada inválida! Por favor, insira 1 para Vendedor ou 2 para Cliente.");
-            }
-        } while (tipoUsuario != 1 && tipoUsuario != 2);
-        return tipoUsuario;
-    }
->>>>>>> b3a88a06ed38eb8fcb77f995243f922cebd5d1bf
 
     private static void menuPrincipal(Scanner scanner) {
         int choice;
