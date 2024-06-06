@@ -62,7 +62,8 @@ public class Main {
                             VendedorFrame vendedorFrame = new VendedorFrame();
                             vendedorFrame.setVisible(true);
                         } else {
-                            
+                            ClienteFrame clienteFrame = new ClienteFrame();
+                            clienteFrame.setVisible(true);
                         }
                     } else {
                         JOptionPane.showMessageDialog(this, "Login ou senha inválidos!");
@@ -412,100 +413,72 @@ public class Main {
             }
         }
     }
-    /*private static void menuPrincipal(Scanner scanner) {
-        int choice;
 
-        do {
-            // Menu principal
-            System.out.println("\n=== Menu Principal ===");
-            System.out.println("1. Listar Produtos");
-            System.out.println("2. Buscar Produto por ID");
-            System.out.println("3. Adicionar Produto ao Carrinho");
-            System.out.println("4. Visualizar Carrinho");
-            System.out.println("5. Cadastrar Produto");
-            System.out.println("0. Encerrar Programa");
-            System.out.print("Escolha uma opção: ");
+    static class ClienteFrame extends JFrame {
+        public ClienteFrame() {
+            setTitle("Menu Cliente");
+            setSize(512, 400);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
 
-            try {
-                choice = scanner.nextInt();
-                switch (choice) {
-                    case 1:
-                        listarEstoque();
-                        break;
-                    case 2:
-                        buscarProdutoPorId(scanner);
-                        break;
-                    case 3:
-                        adicionarProdutoAoCarrinho(scanner);
-                        break;
-                    case 4:
-                        visualizarCarrinho();
-                        break;
-                    case 5:
-                        cadastrarProduto(scanner);
-                        break;
-                    case 0:
-                        System.out.println("Encerrando o programa...");
-                        break;
-                    default:
-                        System.out.println("Opção inválida! Por favor, tente novamente.");
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(3, 1));
+
+            JButton listarButton = new JButton("Listar Produtos");
+            listarButton.addActionListener(e -> listarEstoque());
+
+            JButton adicionarButton = new JButton("Adicionar Produto ao Carrinho");
+            adicionarButton.addActionListener(e -> adicionarProdutoAoCarrinho());
+
+            JButton visualizarButton = new JButton("Visualizar Carrinho");
+            visualizarButton.addActionListener(e -> visualizarCarrinho());
+
+            panel.add(listarButton);
+            panel.add(adicionarButton);
+            panel.add(visualizarButton);
+
+            add(panel);
+        }
+
+        private void listarEstoque() {
+            StringBuilder message = new StringBuilder();
+            if (estoque.isEmpty()) {
+                message.append("O estoque está vazio.");
+            } else {
+                for (Produto produto : estoque) {
+                    message.append(produto.toString()).append("\n");
                 }
-            } catch (Exception e) {
-                System.out.println("Entrada inválida! Por favor, insira um número.");
-                scanner.next(); // Limpar o buffer de entrada
-                choice = -1; // Define uma opção inválida para continuar o loop
             }
-
-        } while (choice != 0);
-    }
-
-
-
-    private static void listarEstoque() {
-        System.out.println("\n=== Produtos em Estoque ===");
-        if (estoque.isEmpty()) {
-            System.out.println("O estoque está vazio.");
-        } else {
-            for (Produto produto : estoque) {
-                System.out.println(produto.toString());
-            }
+            JOptionPane.showMessageDialog(this, message.toString());
         }
-    }
 
-    private static void buscarProdutoPorId(Scanner scanner) {
-        System.out.print("Digite o ID do produto: ");
-        int id = scanner.nextInt();
-
-        for (Produto produto : estoque) {
-            if (produto.getIdProduto() == id) {
-                System.out.println("Produto encontrado:");
-                System.out.println(produto.toString());
-                return;
+        private void adicionarProdutoAoCarrinho() {
+            String idStr = JOptionPane.showInputDialog("Digite o ID do produto que deseja adicionar ao carrinho:");
+            try {
+                int id = Integer.parseInt(idStr);
+                for (Produto produto : estoque) {
+                    if (produto.getIdProduto() == id) {
+                        carrinho.add(produto);
+                        JOptionPane.showMessageDialog(this, "Produto adicionado ao carrinho.");
+                        return;
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Produto não encontrado.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "ID inválido.");
             }
         }
 
-        System.out.println("Produto não encontrado.");
-    }
-
-    private static void adicionarProdutoAoCarrinho(Scanner scanner) {
-        System.out.print("Digite o ID do produto que deseja adicionar ao carrinho: ");
-        int id = scanner.nextInt();
-
-        for (Produto produto : estoque) {
-            if (produto.getIdProduto() == id) {
-                carrinho.add(produto);
-                System.out.println("Produto adicionado ao carrinho.");
-                return;
+        private void visualizarCarrinho() {
+            StringBuilder message = new StringBuilder();
+            if (carrinho.isEmpty()) {
+                message.append("O carrinho está vazio.");
+            } else {
+                for (Produto produto : carrinho) {
+                    message.append(produto.toString()).append("\n");
+                }
             }
+            JOptionPane.showMessageDialog(this, message.toString());
         }
-
-        System.out.println("Produto não encontrado.");
     }
-
-    private static void visualizarCarrinho() {
-        System.out.println("\n=== Carrinho de Compras ===");
-        for (Produto produto : carrinho) {
-            System.out.println(produto.toString());
-        }
-    }*/
 }
