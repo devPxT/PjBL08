@@ -177,6 +177,7 @@ public class Main {
             panel.add(listarButton);
             panel.add(buscarButton);
             panel.add(cadastrarButton);
+            panel.add(deslogarButton());
 
             add(panel);
         }
@@ -422,7 +423,7 @@ public class Main {
             setLocationRelativeTo(null);
 
             JPanel panel = new JPanel();
-            panel.setLayout(new GridLayout(3, 1));
+            panel.setLayout(new GridLayout(4, 1));
 
             JButton listarButton = new JButton("Listar Produtos");
             listarButton.addActionListener(e -> listarEstoque());
@@ -436,6 +437,7 @@ public class Main {
             panel.add(listarButton);
             panel.add(adicionarButton);
             panel.add(visualizarButton);
+            panel.add(deslogarButton());
 
             add(panel);
         }
@@ -480,5 +482,18 @@ public class Main {
             }
             JOptionPane.showMessageDialog(this, message.toString());
         }
+    }
+    
+    private static JButton deslogarButton() {
+        JButton logoutButton = new JButton("Deslogar");
+        logoutButton.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                LoginFrame loginFrame = new LoginFrame();
+                loginFrame.setVisible(true);
+            });
+            JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(logoutButton);
+            topFrame.dispose();
+        });
+        return logoutButton;
     }
 }
