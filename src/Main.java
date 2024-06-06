@@ -53,6 +53,24 @@ public class Main {
 
             JButton registerButton = new JButton("Cadastrar");
 
+            loginButton.addActionListener(e -> {
+                try {
+                    if (login()) {
+                        dispose();
+                        String userType = (String) userTypeComboBox.getSelectedItem();
+                        if ("Vendedor".equals(userType)) {
+
+                        } else {
+                            
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Login ou senha inválidos!");
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this, "Erro ao ler o arquivo de usuários.");
+                }
+            });
+
             registerButton.addActionListener(e -> {
                 try {
                     cadastrar();
@@ -71,6 +89,25 @@ public class Main {
             panel.add(loginButton);
 
             add(panel);
+        }
+
+        private boolean login() throws IOException {
+            String login = loginField.getText();
+            String senha = new String(passwordField.getPassword());
+            String userType = (String) userTypeComboBox.getSelectedItem();
+
+            createUsersFileIfNeed();
+
+            try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] user = line.split(",");
+                    if (user[0].equals(userType) && user[1].equals(login) && user[2].equals(senha)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void cadastrar() throws IOException {
@@ -115,7 +152,7 @@ public class Main {
             }
         }
     }
-}
+
 
     //private static boolean login(Scanner scanner) throws IOException {
         //int tipoUsuario = getTipoUsuario(scanner);
@@ -475,5 +512,5 @@ public class Main {
     
         Produto p = new EletroDomestico(getNextId(), preco, marca, modelo, volume, eficienciaEnergetica);
         estoque.add(p);
-    }
-}*/
+    }*/
+}
