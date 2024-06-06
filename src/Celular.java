@@ -6,12 +6,8 @@ public class Celular extends Eletronico {
         this.bateria = bateria;
     }
 
-    public void imprimeDescricao() {
-        System.out.println(toString());
-    }
-
     @Override
     public String toString() {
-        return super.toString() + ", Bateria: " + bateria + " mAh";
+        return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Bateria: " + bateria + " mAh";
     }
 }

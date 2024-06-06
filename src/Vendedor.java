@@ -21,7 +21,7 @@ public class Vendedor extends Usuario {
     public void anunciarItemVenda(ItemVenda item) {
         itensAnunciados.add(item);
         System.out.println("Item anunciado pelo vendedor " + getNome() + ":");
-        item.imprimeDescricao();
+        item.toString();
     }
 
     public void imprimeDescricao() {

@@ -6,13 +6,9 @@ public class Moto extends Automovel {
         this.tipo = tipo;
     }
 
-    public void imprimeDescricao() {
-        System.out.println(toString());
-    }
-
     @Override
     public String toString() {
-        return super.toString() + ", Tipo: " + tipo;
+        return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Tipo: " + tipo;
     }
 
 }
