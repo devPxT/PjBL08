@@ -55,11 +55,12 @@ public class Main {
 
             loginButton.addActionListener(e -> {
                 try {
-                    if (login()) {
+                    if (login() == true) {
                         dispose();
                         String userType = (String) userTypeComboBox.getSelectedItem();
                         if ("Vendedor".equals(userType)) {
-
+                            VendedorFrame vendedorFrame = new VendedorFrame();
+                            vendedorFrame.setVisible(true);
                         } else {
                             
                         }
@@ -153,69 +154,265 @@ public class Main {
         }
     }
 
+    static class VendedorFrame extends JFrame {
+        public VendedorFrame() {
+            setTitle("Menu Vendedor");
+            setSize(640, 480);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
 
-    //private static boolean login(Scanner scanner) throws IOException {
-        //int tipoUsuario = getTipoUsuario(scanner);
-        //System.out.print("Digite o login: ");
-        //String login = scanner.nextLine();
-        //System.out.print("Digite a senha: ");
-        //String senha = scanner.nextLine();
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(4, 1));
 
-        // try (BufferedReader br = new BufferedReader(new FileReader(Users_File))) {
-        //BufferedReader br = new BufferedReader(new FileReader(Users_File));
-        //String line;
-        //while ((line = br.readLine()) != null) {
-            //String[] user = line.split(",");
-            //if (Integer.parseInt(user[0]) == tipoUsuario && user[1].equals(login) && user[2].equals(senha)) {
-                //br.close();
-                //System.out.println("Login bem-sucedido!");
-                //return true;
-            //}
-        //}
-        // } catch (IOException e) {
-        //     System.out.println("Erro ao ler o arquivo de usuários.");
-        // }print
-        //br.close();
-        //System.out.println("Login ou senha inválidos!");
-        //return false;
-    //}
-            // } catch (IOException e) {
-            //     System.out.println("Erro ao salvar os dados do usuário.");
-            // }
+            JButton listarButton = new JButton("Listar Produtos");
+            listarButton.addActionListener(e -> listarEstoque());
 
-    /*private static boolean isLoginRepetido(int userType, String login) {
-        try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] user = line.split(",");
-                if (Integer.parseInt(user[0]) == userType && user[1].equals(login)) {
-                    br.close();
-                    return true;
+            JButton buscarButton = new JButton("Buscar Produto por ID");
+            buscarButton.addActionListener(e -> buscarProdutoPorId());
+
+            JButton cadastrarButton = new JButton("Cadastrar Produto");
+            cadastrarButton.addActionListener(e -> cadastrarProduto());
+
+            panel.add(listarButton);
+            panel.add(buscarButton);
+            panel.add(cadastrarButton);
+
+            add(panel);
+        }
+
+        private void listarEstoque() {
+            StringBuilder message = new StringBuilder();
+            if (estoque.isEmpty()) {
+                message.append("O estoque está vazio.");
+            } else {
+                for (Produto produto : estoque) {
+                    message.append(produto.toString()).append("\n");
                 }
             }
-            br.close();
-        } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo de usuários.");
+            JOptionPane.showMessageDialog(this, message.toString());
         }
-        return false;
+
+        private void buscarProdutoPorId() {
+            String idStr = JOptionPane.showInputDialog("Digite o ID do produto:");
+            try {
+                int id = Integer.parseInt(idStr);
+                for (Produto produto : estoque) {
+                    if (produto.getIdProduto() == id) {
+                        JOptionPane.showMessageDialog(this, "Produto encontrado:\n" + produto.toString());
+                        return;
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Produto não encontrado.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "ID inválido.");
+            }
+        }
+
+        private void cadastrarProduto() {
+            JDialog dialog = new JDialog(this, "Escolha o tipo de produto a cadastrar:", true);
+            dialog.setLayout(new BorderLayout());
+            dialog.setSize(300, 300);
+            dialog.setLocationRelativeTo(this);
+        
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(6, 1)); // 6 rows, 1 column
+        
+            String[] options = {"Roupa", "Computador", "Celular", "Carro", "Moto", "Eletrodoméstico"};
+            for (int i = 0; i < options.length; i++) {
+                JButton button = new JButton(options[i]);
+                final int optionIndex = i;
+                button.addActionListener(e -> {
+                    switch (optionIndex) {
+                        case 0:
+                            cadastrarRoupa();
+                            break;
+                        case 1:
+                            cadastrarComputador();
+                            break;
+                        case 2:
+                            cadastrarCelular();
+                            break;
+                        case 3:
+                            cadastrarCarro();
+                            break;
+                        case 4:
+                            cadastrarMoto();
+                            break;
+                        case 5:
+                            cadastrarEletroDomestico();
+                            break;
+                        default:
+                            JOptionPane.showMessageDialog(panel, "Opção inválida.");
+                    }
+                    incrementNextId();
+                });
+                panel.add(button);
+            }
+        
+            JButton cancelButton = new JButton("Cancelar");
+            cancelButton.addActionListener(e -> dialog.dispose());
+        
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(cancelButton);
+        
+            dialog.add(panel, BorderLayout.CENTER);
+            dialog.add(buttonPanel, BorderLayout.SOUTH);
+        
+            dialog.setVisible(true);
+        }
+        
+        private void cadastrarRoupa() {
+            boolean cancel = false;
+            while (true) {
+                try {
+                    String preco = inputWithCheck("Informe o preço:");
+                    if (preco == null) {
+                        cancel = true;
+                        break; // User pressed cancel
+                    }
+                    double newPreco = Double.parseDouble(preco);
+        
+                    String genero = inputWithCheck("Informe o gênero:");
+                    if (genero == null) {
+                        cancel = true;
+                        break;
+                    }
+        
+                    String material = inputWithCheck("Informe o material:");
+                    if (material == null) {
+                        cancel = true;
+                        break;
+                    }
+        
+                    String cor = inputWithCheck("Informe a cor:");
+                    if (cor == null) {
+                        cancel = true;
+                        break;
+                    }
+        
+                    String marca = inputWithCheck("Informe a marca:");
+                    if (marca == null) {
+                        cancel = true;
+                        break;
+                    }
+        
+                    Produto roupa = new Roupa(getNextId(), newPreco, genero, material, cor, marca);
+                    estoque.add(roupa);
+        
+                    JOptionPane.showMessageDialog(this, "Roupa cadastrada com sucesso.");
+                    break;
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Preço inválido. Por favor, insira um valor válido.");
+                }
+            }
+            if (cancel) {
+                JOptionPane.showMessageDialog(this, "Cadastro de roupa cancelado.");
+            }
+        }
+        
+        private String inputWithCheck(String message) {
+            while (true) {
+                String input = JOptionPane.showInputDialog(message);
+                if (input == null) {
+                    return null; // User pressed cancel
+                }
+                if (input.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Entrada inválida. Por favor, tente novamente.");
+                } else {
+                    return input;
+                }
+            }
+        }
+
+        private void cadastrarComputador() {
+            try {
+                double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
+                String sistemaOperacional = JOptionPane.showInputDialog("Informe o sistema operacional:");
+                int fonte = Integer.parseInt(JOptionPane.showInputDialog("Informe a fonte (em watts):"));
+                String conectividade = JOptionPane.showInputDialog("Informe a conectividade:");
+                int garantia = Integer.parseInt(JOptionPane.showInputDialog("Informe a garantia (em meses):"));
+                boolean mouse = JOptionPane.showConfirmDialog(this, "Possui mouse?") == JOptionPane.YES_OPTION;
+
+                Produto computador = new Computador(getNextId(), preco, sistemaOperacional, fonte, conectividade, garantia, mouse);
+                estoque.add(computador);
+
+                JOptionPane.showMessageDialog(this, "Computador cadastrado com sucesso.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
+
+        private void cadastrarCelular() {
+            try {
+                double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
+                String sistemaOperacional = JOptionPane.showInputDialog("Informe o sistema operacional:");
+                int fonte = Integer.parseInt(JOptionPane.showInputDialog("Informe a fonte (em watts):"));
+                String conectividade = JOptionPane.showInputDialog("Informe a conectividade:");
+                int garantia = Integer.parseInt(JOptionPane.showInputDialog("Informe a garantia (em meses):"));
+                float bateria = Float.parseFloat(JOptionPane.showInputDialog("Informe a capacidade da bateria (em mAh):"));
+
+                Produto celular = new Celular(getNextId(), preco, sistemaOperacional, fonte, conectividade, garantia, bateria);
+                estoque.add(celular);
+
+                JOptionPane.showMessageDialog(this, "Celular cadastrado com sucesso.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
+
+        private void cadastrarCarro() {
+            try {
+                double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
+                String marca = JOptionPane.showInputDialog("Informe a marca:");
+                String modelo = JOptionPane.showInputDialog("Informe o modelo:");
+                int ano = Integer.parseInt(JOptionPane.showInputDialog("Informe o ano:"));
+                int portas = Integer.parseInt(JOptionPane.showInputDialog("Informe o número de portas:"));
+                float tamanhoPortaMalas = Float.parseFloat(JOptionPane.showInputDialog("Informe o tamanho do porta-malas (em litros):"));
+
+                Produto carro = new Carro(getNextId(), preco, marca, modelo, ano, portas, tamanhoPortaMalas);
+                estoque.add(carro);
+
+                JOptionPane.showMessageDialog(this, "Carro cadastrado com sucesso.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
+
+        private void cadastrarMoto() {
+            try {
+                double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
+                String marca = JOptionPane.showInputDialog("Informe a marca:");
+                String modelo = JOptionPane.showInputDialog("Informe o modelo:");
+                int ano = Integer.parseInt(JOptionPane.showInputDialog("Informe o ano:"));
+                String tipo = JOptionPane.showInputDialog("Informe o tipo:");
+
+                Produto moto = new Moto(getNextId(), preco, marca, modelo, ano, tipo);
+                estoque.add(moto);
+
+                JOptionPane.showMessageDialog(this, "Moto cadastrada com sucesso.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
+
+        private void cadastrarEletroDomestico() {
+            try {
+                double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
+                String marca = JOptionPane.showInputDialog("Informe a marca:");
+                String modelo = JOptionPane.showInputDialog("Informe o modelo:");
+                float volume = Float.parseFloat(JOptionPane.showInputDialog("Informe o volume em litros:"));
+                String eficienciaEnergetica = JOptionPane.showInputDialog("Informe a Eficiência Energética:");
+
+                Produto eletroDomestico = new EletroDomestico(getNextId(), preco, marca, modelo, volume, eficienciaEnergetica);
+                estoque.add(eletroDomestico);
+
+                JOptionPane.showMessageDialog(this, "Eletrodoméstico cadastrado com sucesso.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
     }
-
-    //private static int getTipoUsuario(Scanner scanner) {
-        //int tipoUsuario;
-        //do {
-            //System.out.println("1. Vendedor");
-            //System.out.println("2. Cliente");
-            //System.out.print("Digite o tipo de usuário (1 ou 2): ");
-            //tipoUsuario = scanner.nextInt();
-            //scanner.nextLine(); // Limpar o buffer de entrada
-            //if (tipoUsuario != 1 && tipoUsuario != 2) {
-                //System.out.println("Entrada inválida! Por favor, insira 1 para Vendedor ou 2 para Cliente.");
-            //}
-        //} while (tipoUsuario != 1 && tipoUsuario != 2);
-        //return tipoUsuario;
-    //}
-
-    private static void menuPrincipal(Scanner scanner) {
+    /*private static void menuPrincipal(Scanner scanner) {
         int choice;
 
         do {
@@ -310,207 +507,5 @@ public class Main {
         for (Produto produto : carrinho) {
             System.out.println(produto.toString());
         }
-    }
-    
-    public static void cadastrarProduto(Scanner scanner) {
-        System.out.println("\n=== Cadastro de Produto ===");
-        System.out.println("Escolha o tipo de produto a cadastrar:");
-        System.out.println("1. Vestimenta");
-        System.out.println("2. Computador");
-        System.out.println("3. Celular");
-        System.out.println("4. Carro");
-        System.out.println("5. Moto");
-        System.out.println("6. Eletrodoméstico");
-        System.out.print("Opção: ");
-    
-        int opcao = scanner.nextInt();
-        scanner.nextLine();
-    
-        switch (opcao) {
-            case 1:
-                cadastrarVestimenta(scanner);
-                incrementNextId();
-                break;
-            case 2:
-                cadastrarComputador(scanner);
-                incrementNextId();
-                break;
-            case 3:
-                cadastrarCelular(scanner);
-                incrementNextId();
-                break;
-            case 4:
-                cadastrarCarro(scanner);
-                incrementNextId();
-                break;
-            case 5:
-                cadastrarMoto(scanner);
-                incrementNextId();
-                break;
-            case 6:
-                cadastrarEletroDomestico(scanner);
-                incrementNextId();
-                break;
-            default:
-                System.out.println("Opção inválida.");
-        }
-    }
-
-    public static void cadastrarVestimenta(Scanner scanner) {
-        System.out.print("Informe o preço: ");
-        double preco = scanner.nextDouble();
-        scanner.nextLine();
-    
-        System.out.print("Informe o gênero: ");
-        String genero = scanner.nextLine();
-    
-        System.out.print("Informe o material: ");
-        String material = scanner.nextLine();
-    
-        System.out.print("Informe a cor: ");
-        String cor = scanner.nextLine();
-    
-        System.out.print("Informe a marca: ");
-        String marca = scanner.nextLine();
-    
-        //Vestimenta vestimenta = new Vestimenta(getNextId(), preco, genero, material, cor, marca);
-        // estoque.add(vestimenta);
-        Produto p = new Vestimenta(getNextId(), preco, genero, material, cor, marca);
-        estoque.add(p);
-    
-        System.out.println("Vestimenta cadastrada com sucesso.");
-    }
-
-    public static void cadastrarComputador(Scanner scanner) {
-        System.out.print("Informe o preço: ");
-        double preco = scanner.nextDouble();
-        scanner.nextLine();
-    
-        System.out.print("Informe o sistema operacional: ");
-        String sistemaOperacional = scanner.nextLine();
-    
-        System.out.print("Informe a fonte (em watts): ");
-        int fonte = scanner.nextInt();
-        scanner.nextLine();
-    
-        System.out.print("Informe a conectividade: ");
-        String conectividade = scanner.nextLine();
-    
-        System.out.print("Informe a garantia (em meses): ");
-        int garantia = scanner.nextInt();
-    
-        System.out.print("Possui mouse? (true/false): ");
-        boolean mouse = scanner.nextBoolean();
-    
-        // Computador computador = new Computador(getNextId(), preco, sistemaOperacional, fonte, conectividade, garantia, mouse);
-        // estoque.add(computador);
-        Produto p = new Computador(getNextId(), preco, sistemaOperacional, fonte, conectividade, garantia, mouse);
-        estoque.add(p);
-    
-        System.out.println("Computador cadastrado com sucesso.");
-    }
-
-    public static void cadastrarCelular(Scanner scanner) {
-        System.out.print("Informe o preço: ");
-        double preco = scanner.nextDouble();
-        scanner.nextLine();
-    
-        System.out.print("Informe o sistema operacional: ");
-        String sistemaOperacional = scanner.nextLine();
-    
-        System.out.print("Informe a fonte (em watts): ");
-        int fonte = scanner.nextInt();
-        scanner.nextLine();
-    
-        System.out.print("Informe a conectividade: ");
-        String conectividade = scanner.nextLine();
-    
-        System.out.print("Informe a garantia (em meses): ");
-        int garantia = scanner.nextInt();
-    
-        System.out.print("Informe a capacidade da bateria (em mAh): ");
-        float bateria = scanner.nextFloat();
-    
-        // Celular celular = new Celular(getNextId(), preco, sistemaOperacional, fonte, conectividade, garantia, bateria);
-        // estoque.add(celular);
-        Produto p = new Celular(getNextId(), preco, sistemaOperacional, fonte, conectividade, garantia, bateria);
-        estoque.add(p);
-    
-        System.out.println("Celular cadastrado com sucesso.");
-    }
-
-    public static void cadastrarCarro(Scanner scanner) {
-        System.out.print("Informe o preço: ");
-        double preco = scanner.nextDouble();
-        scanner.nextLine();
-    
-        System.out.print("Informe a marca: ");
-        String marca = scanner.nextLine();
-    
-        System.out.print("Informe o modelo: ");
-        String modelo = scanner.nextLine();
-    
-        System.out.print("Informe o ano: ");
-        int ano = scanner.nextInt();
-    
-        System.out.print("Informe o número de portas: ");
-        int portas = scanner.nextInt();
-    
-        System.out.print("Informe o tamanho do porta-malas (em litros): ");
-        float tamanhoPortaMalas = scanner.nextFloat();
-    
-        // Carro carro = new Carro(getNextId(), preco, marca, modelo, ano, portas, tamanhoPortaMalas);
-        // estoque.add(carro);
-        Produto p = new Carro(getNextId(), preco, marca, modelo, ano, portas, tamanhoPortaMalas);
-        estoque.add(p);
-    
-        System.out.println("Carro cadastrado com sucesso.");
-    }
-
-    public static void cadastrarMoto(Scanner scanner) {
-        System.out.print("Informe o preço: ");
-        double preco = scanner.nextDouble();
-        scanner.nextLine();
-    
-        System.out.print("Informe a marca: ");
-        String marca = scanner.nextLine();
-    
-        System.out.print("Informe o modelo: ");
-        String modelo = scanner.nextLine();
-    
-        System.out.print("Informe o ano: ");
-        int ano = scanner.nextInt();
-    
-        System.out.print("Informe o tipo: ");
-        String tipo = scanner.next();
-    
-        // Moto moto = new Moto(getNextId(), preco, marca, modelo, ano, tipo);
-        // estoque.add(moto);
-        Produto p = new Moto(getNextId(), preco, marca, modelo, ano, tipo);
-        estoque.add(p);
-    
-        System.out.println("Moto cadastrada com sucesso.");
-    }
-
-    public static void cadastrarEletroDomestico(Scanner scanner) {
-        System.out.print("Informe o preço: ");
-        double preco = scanner.nextDouble();
-        scanner.nextLine();
-    
-        System.out.print("Informe a marca: ");
-        String marca = scanner.nextLine();
-    
-        System.out.print("Informe o modelo: ");
-        String modelo = scanner.nextLine();
-    
-        System.out.print("Informe o volume em litros: ");
-        float volume = scanner.nextFloat();
-        scanner.nextLine();
-    
-        System.out.print("Informe a Eficiência Energética: ");
-        String eficienciaEnergetica = scanner.nextLine();
-    
-        Produto p = new EletroDomestico(getNextId(), preco, marca, modelo, volume, eficienciaEnergetica);
-        estoque.add(p);
     }*/
 }
