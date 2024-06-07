@@ -18,6 +18,5 @@ public abstract class Produto {
         return preco;
     }
 
-    @Override
-    public abstract String toString();
+    public abstract String imprimeDescricao();
 }

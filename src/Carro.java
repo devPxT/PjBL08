@@ -9,7 +9,7 @@ public class Carro extends Automovel {
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Portas: " + portas + ", Tamanho Porta Malas: " + tamanhoPortaMalas + " litros";
     }
 }

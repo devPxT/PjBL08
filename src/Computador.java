@@ -7,7 +7,7 @@ public class Computador extends Eletronico {
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Mouse: " + (mouse ? "Sim" : "Não");
     }
 }

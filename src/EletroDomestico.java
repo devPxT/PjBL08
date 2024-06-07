@@ -13,7 +13,7 @@ public class EletroDomestico extends Produto{
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Marca: " + marca + ", Modelo: " + modelo + ", Volume em litros: " + volume + ", Eficiência Energética: " + eficienciaEnergetica;
     }
 }

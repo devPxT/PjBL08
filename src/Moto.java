@@ -7,7 +7,7 @@ public class Moto extends Automovel {
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Tipo: " + tipo;
     }
 

@@ -7,7 +7,7 @@ public class Celular extends Eletronico {
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Bateria: " + bateria + " mAh";
     }
 }
