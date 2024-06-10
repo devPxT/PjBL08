@@ -1,4 +1,4 @@
-public class Vestimenta extends Produto {
+public abstract class Vestimenta extends Produto {
     private String genero;
     private String material;
     private String cor;
@@ -12,8 +12,24 @@ public class Vestimenta extends Produto {
         this.marca = marca;
     }
 
+    public String getGenero() {
+        return genero;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public String getCor() {
+        return cor;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Gênero: " + genero + ", Material: " + material + ", Cor: " + cor + ", Marca: " + marca;
     }
 }

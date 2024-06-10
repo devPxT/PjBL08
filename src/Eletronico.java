@@ -13,7 +13,7 @@ public class Eletronico extends Produto {
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ 
         ", Sistema Operacional: " + sistemaOperacional + ", Fonte: " + fonte + ", Conectividade: " + conectividade + ", Garantia: " + garantia + " meses";
     }

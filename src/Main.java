@@ -306,7 +306,7 @@ public class Main {
                 message.append("O estoque está vazio.");
             } else {
                 for (Produto produto : estoque) {
-                    message.append(produto.toString()).append("\n");
+                    message.append(produto.imprimeDescricao()).append("\n");
                 }
             }
             JOptionPane.showMessageDialog(this, message.toString());
@@ -318,7 +318,7 @@ public class Main {
                 int id = Integer.parseInt(idStr);
                 for (Produto produto : estoque) {
                     if (produto.getIdProduto() == id) {
-                        JOptionPane.showMessageDialog(this, "Produto encontrado:\n" + produto.toString());
+                        JOptionPane.showMessageDialog(this, "Produto encontrado:\n" + produto.imprimeDescricao());
                         return;
                     }
                 }
@@ -415,8 +415,14 @@ public class Main {
                         cancel = true;
                         break;
                     }
+
+                    String tamanho = inputWithCheck("Informe o tamanho:");
+                    if (tamanho == null) {
+                        cancel = true;
+                        break;
+                    }
         
-                    Produto roupa = new Roupa(getNextId(), newPreco, genero, material, cor, marca);
+                    Produto roupa = new Roupa(getNextId(), newPreco, genero, material, cor, marca, tamanho);
                     estoque.add(roupa);
         
                     JOptionPane.showMessageDialog(this, "Roupa cadastrada com sucesso.");
@@ -434,7 +440,7 @@ public class Main {
             while (true) {
                 String input = JOptionPane.showInputDialog(message);
                 if (input == null) {
-                    return null; // User pressed cancel
+                    return null; // usuario clicou no cancel
                 }
                 if (input.trim().isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Entrada inválida. Por favor, tente novamente.");
@@ -445,20 +451,60 @@ public class Main {
         }
 
         private void cadastrarComputador() {
-            try {
-                double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
-                String sistemaOperacional = JOptionPane.showInputDialog("Informe o sistema operacional:");
-                int fonte = Integer.parseInt(JOptionPane.showInputDialog("Informe a fonte (em watts):"));
-                String conectividade = JOptionPane.showInputDialog("Informe a conectividade:");
-                int garantia = Integer.parseInt(JOptionPane.showInputDialog("Informe a garantia (em meses):"));
-                boolean mouse = JOptionPane.showConfirmDialog(this, "Possui mouse?") == JOptionPane.YES_OPTION;
+            boolean cancel = false;
+            while (true) {
+                try {
+                    String preco = inputWithCheck("Informe o preço:");
+                    if (preco == null) {
+                        cancel = true;
+                        break;
+                    }
+                    
+                    double newPreco = Double.parseDouble(preco);
 
-                Produto computador = new Computador(getNextId(), preco, sistemaOperacional, fonte, conectividade, garantia, mouse);
-                estoque.add(computador);
+                    String sistemaOperacional = inputWithCheck("Informe o sistema operacional:");
+                    if (sistemaOperacional == null) {
+                        cancel = true;
+                        break;
+                    }
 
-                JOptionPane.showMessageDialog(this, "Computador cadastrado com sucesso.");
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+                    String fonte = inputWithCheck("Informe a fonte (em watts):");
+                    if (fonte == null) {
+                        cancel = true;
+                        break;
+                    }
+                    int newFonte = Integer.parseInt(fonte);
+                 
+
+                    String conectividade = inputWithCheck("Informe a conectividade:");
+                    if (conectividade == null) {
+                        cancel = true;
+                        break;
+                    }
+                    
+                    String garantia = inputWithCheck("Informe a garantia (em meses):");
+                    if (garantia == null) {
+                        cancel = true;
+                        break;
+                    }
+                    int newGarantia = Integer.parseInt(garantia);
+
+                    boolean mouse = JOptionPane.showConfirmDialog(this, "Possui mouse?") == JOptionPane.YES_OPTION;
+                    // if (mouse == null) {
+                    //     cancel = true;
+                    //     break;
+                    // }
+
+                    Produto computador = new Computador(getNextId(), newPreco, sistemaOperacional, newFonte, conectividade, newGarantia, mouse);
+                    estoque.add(computador);
+
+                    JOptionPane.showMessageDialog(this, "Computador cadastrado com sucesso.");
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Entrada inválida.");
+                }
+            }
+            if (cancel) {
+                JOptionPane.showMessageDialog(this, "Cadastro de computador cancelado.");
             }
         }
 
@@ -566,7 +612,7 @@ public class Main {
                 message.append("O estoque está vazio.");
             } else {
                 for (Produto produto : estoque) {
-                    message.append(produto.toString()).append("\n");
+                    message.append(produto.imprimeDescricao()).append("\n");
                 }
             }
             JOptionPane.showMessageDialog(this, message.toString());
@@ -595,7 +641,7 @@ public class Main {
                 message.append("O carrinho está vazio.");
             } else {
                 for (Produto produto : carrinho) {
-                    message.append(produto.toString()).append("\n");
+                    message.append(produto.imprimeDescricao()).append("\n");
                 }
             }
             JOptionPane.showMessageDialog(this, message.toString());

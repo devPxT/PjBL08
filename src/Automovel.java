@@ -1,4 +1,4 @@
-public class Automovel extends Produto {
+public abstract class Automovel extends Produto {
     private String marca;
     private String modelo;
     private int ano;
@@ -11,7 +11,7 @@ public class Automovel extends Produto {
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Marca: " + marca + ", Modelo: " + modelo + ", Ano: " + ano;
     }
 }

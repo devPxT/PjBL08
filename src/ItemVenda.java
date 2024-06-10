@@ -9,7 +9,7 @@ public class ItemVenda extends Produto {
     }
 
     @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Nome Item: " + nomeItem + ", Descrição: " + descricao;
     }
 }
