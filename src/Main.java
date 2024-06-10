@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private static final String USERS_FILE = "users.txt";
+    private static final String USERS_FILE = "users.dat"; //ARQUIVO DE ARMAZENAMENTO DE TODOS OS USUARIOS
+    private static List<Usuario> usuarios = new ArrayList<>();
+
     private static List<Produto> estoque = new ArrayList<>();
     private static List<Produto> carrinho = new ArrayList<>();
+
     private static int nextId = 1;
 
     public static void main(String[] args) {
+        loadUsers(); //carrega os usuarios do arquivo .dat
         SwingUtilities.invokeLater(() -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
@@ -25,6 +29,30 @@ public class Main {
         nextId++;
     }
 
+    private static void loadUsers() {
+        File file = new File(USERS_FILE);
+        if (file.length() == 0) {
+            return; //arquivo vazio ent n tem nada pra carregar
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(USERS_FILE))) {
+            usuarios = (List<Usuario>) ois.readObject();
+        } catch (FileNotFoundException e) {
+            //arquivo não existe, ent começa com uma lista vazia
+            usuarios = new ArrayList<>();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveUsers() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
+            oos.writeObject(usuarios);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     static class LoginFrame extends JFrame {
         private JTextField loginField;
         private JPasswordField passwordField;
@@ -32,12 +60,12 @@ public class Main {
 
         public LoginFrame() {
             setTitle("Login");
-            setSize(400, 300);
+            setSize(400, 200);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setLocationRelativeTo(null);
 
             JPanel panel = new JPanel();
-            panel.setLayout(new GridLayout(6, 2));
+            panel.setLayout(new GridLayout(4, 2));
 
             JLabel userTypeLabel = new JLabel("Tipo de Usuário:");
             String[] userTypes = {"Vendedor", "Cliente"};
@@ -50,12 +78,9 @@ public class Main {
             passwordField = new JPasswordField();
 
             JButton loginButton = new JButton("Logar");
-
-            JButton registerButton = new JButton("Cadastrar");
-
             loginButton.addActionListener(e -> {
                 try {
-                    if (login() == true) {
+                    if (login()) {
                         dispose();
                         String userType = (String) userTypeComboBox.getSelectedItem();
                         if ("Vendedor".equals(userType)) {
@@ -66,27 +91,28 @@ public class Main {
                             clienteFrame.setVisible(true);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(this, "Login ou senha inválidos!");
+                        JOptionPane.showMessageDialog(this, "Login, senha ou tipo de usuário inválidos!");
                     }
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(this, "Erro ao ler o arquivo de usuários.");
                 }
             });
 
+            JButton registerButton = new JButton("Cadastrar");
             registerButton.addActionListener(e -> {
-                try {
-                    cadastrar();
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(this, "Erro ao salvar os dados do usuário.");
-                }
+                dispose();
+                RegisterFrame registerFrame = new RegisterFrame();
+                registerFrame.setVisible(true);
             });
 
             panel.add(userTypeLabel);
             panel.add(userTypeComboBox);
+
             panel.add(loginLabel);
             panel.add(loginField);
             panel.add(passwordLabel);
             panel.add(passwordField);
+
             panel.add(registerButton);
             panel.add(loginButton);
 
@@ -98,62 +124,154 @@ public class Main {
             String senha = new String(passwordField.getPassword());
             String userType = (String) userTypeComboBox.getSelectedItem();
 
-            createUsersFileIfNeed();
-
-            try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] user = line.split(",");
-                    if (user[0].equals(userType) && user[1].equals(login) && user[2].equals(senha)) {
+            for (Usuario usuario : usuarios) {
+                if (usuario.getLogin().equals(login) && usuario.getSenha().equals(senha)) {
+                    if ((usuario instanceof Vendedor && "Vendedor".equals(userType)) || (usuario instanceof Cliente && "Cliente".equals(userType))) {
                         return true;
                     }
                 }
             }
             return false;
         }
+    }
+
+    static class RegisterFrame extends JFrame {
+        private JTextField nomeField;
+        private JTextField cpfField;
+        private JTextField loginField;
+        private JPasswordField passwordField;
+        private JComboBox<String> userTypeComboBox;
+        private JTextField cnpjField;
+        private JTextField cepField;
+        private JPanel painelCEPeCPNJ;
+
+        public RegisterFrame() {
+            setTitle("Cadastro");
+            setSize(400, 300);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
+
+            JPanel panel = new JPanel();
+            panel.setLayout(new GridLayout(7, 2));
+
+            JLabel userTypeLabel = new JLabel("Tipo de Usuário:");
+            String[] userTypes = {"Vendedor", "Cliente"};
+            userTypeComboBox = new JComboBox<>(userTypes);
+            userTypeComboBox.addActionListener(e -> atualizarPainelCEPeCPNJ());
+
+            JLabel nomeLabel = new JLabel("Nome:");
+            nomeField = new JTextField();
+
+            JLabel cpfLabel = new JLabel("CPF:");
+            cpfField = new JTextField();
+
+            JLabel loginLabel = new JLabel("Login:");
+            loginField = new JTextField();
+
+            JLabel passwordLabel = new JLabel("Senha:");
+            passwordField = new JPasswordField();
+
+            cnpjField = new JTextField();
+            cepField = new JTextField();
+
+            painelCEPeCPNJ = new JPanel();
+            atualizarPainelCEPeCPNJ();
+
+            JButton registerButton = new JButton("Cadastrar");
+            registerButton.addActionListener(e -> {
+                try {
+                    cadastrar();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this, "Erro ao salvar os dados do usuário.");
+                }
+            });
+
+            JButton backButton = new JButton("Voltar");
+            backButton.addActionListener(e -> {
+                dispose();
+                LoginFrame loginFrame = new LoginFrame();
+                loginFrame.setVisible(true);
+            });
+
+            panel.add(userTypeLabel);
+            panel.add(userTypeComboBox);
+
+            panel.add(nomeLabel);
+            panel.add(nomeField);
+            panel.add(cpfLabel);
+            panel.add(cpfField);
+
+            panel.add(loginLabel);
+            panel.add(loginField);
+            panel.add(passwordLabel);
+            panel.add(passwordField);
+
+            panel.add(painelCEPeCPNJ);
+            panel.add(new JLabel(""));
+
+            panel.add(backButton);
+            panel.add(registerButton);
+
+            add(panel);
+        }
+
+        private void atualizarPainelCEPeCPNJ() {
+            painelCEPeCPNJ.removeAll();
+            String userType = (String) userTypeComboBox.getSelectedItem();
+            if ("Vendedor".equals(userType)) {
+                painelCEPeCPNJ.setLayout(new GridLayout(1, 2));
+                painelCEPeCPNJ.add(new JLabel("CNPJ:"));
+                painelCEPeCPNJ.add(cnpjField);
+            } else {
+                painelCEPeCPNJ.setLayout(new GridLayout(1, 2));
+                painelCEPeCPNJ.add(new JLabel("CEP:"));
+                painelCEPeCPNJ.add(cepField);
+            }
+            painelCEPeCPNJ.revalidate();
+            painelCEPeCPNJ.repaint();
+        }
 
         private void cadastrar() throws IOException {
+            String nome = nomeField.getText();
+            String cpf = cpfField.getText();
             String login = loginField.getText();
             String senha = new String(passwordField.getPassword());
             String userType = (String) userTypeComboBox.getSelectedItem();
 
-            if (isLoginRepetido(userType, login)) {
+            String cepORcnpj = userType.equals("Vendedor") ? cnpjField.getText() : cepField.getText();
+            if (cepORcnpj.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, userType.equals("Vendedor") ? "CNPJ não pode estar vazio" : "CEP não pode estar vazio");
+                return;
+            }
+
+            if (isLoginRepetido(login, userType)) {
                 JOptionPane.showMessageDialog(this, "Login indisponível. Por favor, escolha um login diferente.");
                 return;
             }
 
-            createUsersFileIfNeed();
-
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(USERS_FILE, true))) {
-                bw.write(userType + "," + login + "," + senha);
-                bw.newLine();
+            Usuario usuario;
+            if ("Vendedor".equals(userType)) {
+                usuario = new Vendedor(nome, cpf, login, senha, cepORcnpj);
+            } else {
+                usuario = new Cliente(nome, cpf, login, senha, cepORcnpj);
             }
 
+            usuarios.add(usuario);
+            saveUsers();
             JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
         }
 
-        private boolean isLoginRepetido(String userType, String login) throws IOException {
-            createUsersFileIfNeed();
-
-            try (BufferedReader br = new BufferedReader(new FileReader(USERS_FILE))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    String[] user = line.split(",");
-                    if (user[0].equals(userType) && user[1].equals(login)) {
-                        return true;
-                    }
+        private boolean isLoginRepetido(String login, String userType) {
+            for (Usuario usuario : usuarios) {
+                if (usuario.getLogin().equals(login) &&
+                   ((usuario instanceof Vendedor && "Vendedor".equals(userType)) || (usuario instanceof Cliente && "Cliente".equals(userType)))) {
+                    return true;
                 }
             }
             return false;
         }
-
-        private void createUsersFileIfNeed() throws IOException {
-            File file = new File(USERS_FILE);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-        }
     }
+
 
     static class VendedorFrame extends JFrame {
         public VendedorFrame() {

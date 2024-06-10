@@ -1,8 +1,17 @@
-public abstract class Usuario {
+import java.io.Serializable;
+
+abstract class Usuario implements Serializable {
     private String nome;
     private String cpf;
     private String login;
     private String senha;
+
+    public Usuario(String nome, String cpf, String login, String senha) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.login = login;
+        this.senha = senha;
+    }
 
     public String getNome() {
         return nome;
@@ -20,12 +29,7 @@ public abstract class Usuario {
         return senha;
     }
 
-    public void imprimeDescricao() {
-        System.out.println(toString());
-    }
-
-    @Override
-    public String toString() {
+    public String imprimeDescricao() {
         return "Nome: " + nome + ", CPF: " + cpf + ", Login: " + login + ", Senha: " + senha;
     }
 }
