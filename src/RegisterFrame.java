@@ -1,16 +1,18 @@
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.io.*;
+import java.text.ParseException;
 import java.util.List;
 
 public class RegisterFrame extends JFrame {
     private JTextField nomeField;
-    private JTextField cpfField;
+    private JFormattedTextField cpfField;
+    private JFormattedTextField cnpjField;
+    private JFormattedTextField cepField;
     private JTextField loginField;
     private JPasswordField passwordField;
     private JComboBox<String> userTypeComboBox;
-    private JTextField cnpjField;
-    private JTextField cepField;
     private JPanel painelCEPeCPNJ;
 
     public RegisterFrame() {
@@ -31,16 +33,37 @@ public class RegisterFrame extends JFrame {
         nomeField = new JTextField();
 
         JLabel cpfLabel = new JLabel("CPF:");
-        cpfField = new JTextField();
+        try {
+            MaskFormatter cpfFormatter = new MaskFormatter("###.###.###-##");
+            cpfFormatter.setPlaceholderCharacter('_');
+            cpfField = new JFormattedTextField(cpfFormatter);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        JLabel cnpjLabel = new JLabel("CNPJ:");
+        try {
+            MaskFormatter cnpjFormatter = new MaskFormatter("##.###.###/####-##");
+            cnpjFormatter.setPlaceholderCharacter('_');
+            cnpjField = new JFormattedTextField(cnpjFormatter);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        JLabel cepLabel = new JLabel("CEP:");
+        try {
+            MaskFormatter cepFormatter = new MaskFormatter("#####-###");
+            cepFormatter.setPlaceholderCharacter('_');
+            cepField = new JFormattedTextField(cepFormatter);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         JLabel loginLabel = new JLabel("Login:");
         loginField = new JTextField();
 
         JLabel passwordLabel = new JLabel("Senha:");
         passwordField = new JPasswordField();
-
-        cnpjField = new JTextField();
-        cepField = new JTextField();
 
         painelCEPeCPNJ = new JPanel();
         atualizarPainelCEPeCPNJ();
@@ -75,7 +98,7 @@ public class RegisterFrame extends JFrame {
         panel.add(passwordField);
 
         panel.add(painelCEPeCPNJ);
-        panel.add(new JLabel("")); //dirty fix no layout do campo CEP/CNPJ
+        panel.add(new JLabel("")); // Dirty fix no layout do campo CEP/CNPJ
 
         panel.add(backButton);
         panel.add(registerButton);
@@ -100,16 +123,45 @@ public class RegisterFrame extends JFrame {
     }
 
     private void cadastrar() throws IOException {
-        String nome = nomeField.getText();
-        String cpf = cpfField.getText();
-        String login = loginField.getText();
-        String senha = new String(passwordField.getPassword());
+        String nome = nomeField.getText().trim();
+        String cpf = cpfField.getText().replaceAll("[^0-9]", "").trim(); // Removendo caracteres não numéricos
+        String cnpj = cnpjField.getText().replaceAll("[^0-9]", "").trim(); // Removendo caracteres não numéricos
+        String cep = cepField.getText().replaceAll("[^0-9]", "").trim(); // Removendo caracteres não numéricos
+        String login = loginField.getText().trim();
+        String senha = new String(passwordField.getPassword()).trim();
         String userType = (String) userTypeComboBox.getSelectedItem();
 
-        String cepORcnpj = userType.equals("Vendedor") ? cnpjField.getText() : cepField.getText();
-        if (cepORcnpj.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, userType.equals("Vendedor") ? "CNPJ não pode estar vazio" : "CEP não pode estar vazio");
+        // Validando campos obrigatórios
+        if (nome.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nome não pode estar vazio.");
             return;
+        }
+
+        if (cpf.isEmpty() || cpf.length() != 11) {
+            JOptionPane.showMessageDialog(this, "CPF inválido. Deve ter 11 dígitos.");
+            return;
+        }
+
+        if (login.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Login não pode estar vazio.");
+            return;
+        }
+
+        if (senha.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Senha não pode estar vazia.");
+            return;
+        }
+
+        if (userType.equals("Vendedor")) {
+            if (cnpj.isEmpty() || cnpj.length() != 14) {
+                JOptionPane.showMessageDialog(this, "CNPJ inválido. Deve ter 14 dígitos.");
+                return;
+            }
+        } else {
+            if (cep.isEmpty() || cep.length() != 8) {
+                JOptionPane.showMessageDialog(this, "CEP inválido. Deve ter 8 dígitos.");
+                return;
+            }
         }
 
         if (isLoginRepetido(login, userType)) {
@@ -119,16 +171,13 @@ public class RegisterFrame extends JFrame {
 
         Usuario usuario;
         if ("Vendedor".equals(userType)) {
-            usuario = new Vendedor(nome, cpf, login, senha, cepORcnpj);
+            usuario = new Vendedor(nome, cpf, login, senha, cnpj);
         } else {
-            usuario = new Cliente(nome, cpf, login, senha, cepORcnpj);
+            usuario = new Cliente(nome, cpf, login, senha, cep);
         }
-        // usuarios.add(usuario);
-        // saveUsers();
 
         Dados dados = new Dados();
         dados.loadUsers();
-
         dados.saveUsers(usuario);
 
         JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
