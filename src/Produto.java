@@ -1,7 +1,10 @@
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public abstract class Produto {
+public abstract class Produto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int idProduto;
     private double preco;
 

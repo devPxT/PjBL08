@@ -1,2 +1,0 @@
-Cliente,teste,123
-Vendedor,teste,123
