@@ -16,6 +16,7 @@ public class RegisterFrame extends JFrame {
     private JPasswordField passwordField;
     private JComboBox<String> userTypeComboBox;
     private JPanel painelCEPeCPNJ;
+    private JPanel painelCEPeCPNJText;
 
     public RegisterFrame(Dados dados) {
         this.dados = dados;
@@ -45,7 +46,6 @@ public class RegisterFrame extends JFrame {
             e.printStackTrace();
         }
 
-        JLabel cnpjLabel = new JLabel("CNPJ:");
         try {
             MaskFormatter cnpjFormatter = new MaskFormatter("##.###.###/####-##");
             cnpjFormatter.setPlaceholderCharacter('_');
@@ -54,7 +54,6 @@ public class RegisterFrame extends JFrame {
             e.printStackTrace();
         }
 
-        JLabel cepLabel = new JLabel("CEP:");
         try {
             MaskFormatter cepFormatter = new MaskFormatter("#####-###");
             cepFormatter.setPlaceholderCharacter('_');
@@ -68,6 +67,9 @@ public class RegisterFrame extends JFrame {
 
         JLabel passwordLabel = new JLabel("Senha:");
         passwordField = new JPasswordField();
+
+        painelCEPeCPNJText = new JPanel();
+        atualizarPainelCEPeCNPJText();
 
         painelCEPeCPNJ = new JPanel();
         atualizarPainelCEPeCPNJ();
@@ -101,8 +103,8 @@ public class RegisterFrame extends JFrame {
         panel.add(passwordLabel);
         panel.add(passwordField);
 
+        panel.add(painelCEPeCPNJText);
         panel.add(painelCEPeCPNJ);
-        panel.add(new JLabel(""));
 
         panel.add(backButton);
         panel.add(registerButton);
@@ -114,16 +116,29 @@ public class RegisterFrame extends JFrame {
         painelCEPeCPNJ.removeAll();
         String userType = (String) userTypeComboBox.getSelectedItem();
         if ("Vendedor".equals(userType)) {
-            painelCEPeCPNJ.setLayout(new GridLayout(1, 2));
-            painelCEPeCPNJ.add(new JLabel("CNPJ:"));
+            painelCEPeCPNJ.setLayout(new GridLayout(1, 1));
             painelCEPeCPNJ.add(cnpjField);
         } else {
-            painelCEPeCPNJ.setLayout(new GridLayout(1, 2));
-            painelCEPeCPNJ.add(new JLabel("CEP:"));
+            painelCEPeCPNJ.setLayout(new GridLayout(1, 1));
             painelCEPeCPNJ.add(cepField);
         }
         painelCEPeCPNJ.revalidate();
         painelCEPeCPNJ.repaint();
+        atualizarPainelCEPeCNPJText();
+    }
+
+    private void atualizarPainelCEPeCNPJText() {
+        painelCEPeCPNJText.removeAll();
+        String userType = (String) userTypeComboBox.getSelectedItem();
+        if ("Vendedor".equals(userType)) {
+            painelCEPeCPNJText.setLayout(new GridLayout(1, 1));
+            painelCEPeCPNJText.add(new JLabel("CNPJ:"));
+        } else {
+            painelCEPeCPNJText.setLayout(new GridLayout(1, 1));
+            painelCEPeCPNJText.add(new JLabel("CEP:"));
+        }
+        painelCEPeCPNJText.revalidate();
+        painelCEPeCPNJText.repaint();
     }
 
     private void cadastrar() throws IOException {
