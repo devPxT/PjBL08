@@ -153,38 +153,45 @@ public class RegisterFrame extends JFrame {
 
         if (nome.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nome não pode estar vazio.");
+            nomeField.requestFocus();
             return;
         }
 
         if (cpf.isEmpty() || cpf.length() != 11 || !isCPFValido(cpf)) {
             JOptionPane.showMessageDialog(this, "CPF inválido. Deve ter 11 dígitos e ser um CPF válido.");
+            cpfField.requestFocus();
             return;
         }
 
         if (login.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Login não pode estar vazio.");
+            loginField.requestFocus();
             return;
         }
 
         if (senha.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Senha não pode estar vazia.");
+            passwordField.requestFocus();
             return;
         }
 
         if (userType.equals("Vendedor")) {
             if (cnpj.isEmpty() || cnpj.length() != 14) {
                 JOptionPane.showMessageDialog(this, "CNPJ inválido. Deve ter 14 dígitos.");
+                cnpjField.requestFocus();
                 return;
             }
         } else {
             if (cep.isEmpty() || cep.length() != 8) {
                 JOptionPane.showMessageDialog(this, "CEP inválido. Deve ter 8 dígitos.");
+                cepField.requestFocus();
                 return;
             }
         }
 
         if (isLoginRepetido(login, userType)) {
             JOptionPane.showMessageDialog(this, "Login indisponível. Por favor, escolha um login diferente.");
+            loginField.requestFocus();
             return;
         }
 
