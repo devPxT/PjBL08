@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.util.List;
 
 public class RegisterFrame extends JFrame {
+    private Dados dados;
+
     private JTextField nomeField;
     private JFormattedTextField cpfField;
     private JFormattedTextField cnpjField;
@@ -15,7 +17,9 @@ public class RegisterFrame extends JFrame {
     private JComboBox<String> userTypeComboBox;
     private JPanel painelCEPeCPNJ;
 
-    public RegisterFrame() {
+    public RegisterFrame(Dados dados) {
+        this.dados = dados;
+
         setTitle("Cadastro");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -80,7 +84,7 @@ public class RegisterFrame extends JFrame {
         JButton backButton = new JButton("Voltar");
         backButton.addActionListener(e -> {
             dispose();
-            LoginFrame loginFrame = new LoginFrame();
+            LoginFrame loginFrame = new LoginFrame(dados);
             loginFrame.setVisible(true);
         });
 
@@ -98,7 +102,7 @@ public class RegisterFrame extends JFrame {
         panel.add(passwordField);
 
         panel.add(painelCEPeCPNJ);
-        panel.add(new JLabel("")); // Dirty fix no layout do campo CEP/CNPJ
+        panel.add(new JLabel(""));
 
         panel.add(backButton);
         panel.add(registerButton);
@@ -124,9 +128,9 @@ public class RegisterFrame extends JFrame {
 
     private void cadastrar() throws IOException {
         String nome = nomeField.getText().trim();
-        String cpf = cpfField.getText().replaceAll("[^0-9]", "").trim(); // Removendo caracteres não numéricos
-        String cnpj = cnpjField.getText().replaceAll("[^0-9]", "").trim(); // Removendo caracteres não numéricos
-        String cep = cepField.getText().replaceAll("[^0-9]", "").trim(); // Removendo caracteres não numéricos
+        String cpf = cpfField.getText().replaceAll("[^0-9]", "").trim();
+        String cnpj = cnpjField.getText().replaceAll("[^0-9]", "").trim();
+        String cep = cepField.getText().replaceAll("[^0-9]", "").trim();
         String login = loginField.getText().trim();
         String senha = new String(passwordField.getPassword()).trim();
         String userType = (String) userTypeComboBox.getSelectedItem();
@@ -176,15 +180,13 @@ public class RegisterFrame extends JFrame {
             usuario = new Cliente(nome, cpf, login, senha, cep);
         }
 
-        Dados dados = new Dados();
         dados.loadUsers();
-        dados.saveUsers(usuario);
+        dados.saveUser(usuario);
 
         JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
     }
 
     private boolean isLoginRepetido(String login, String userType) {
-        Dados dados = new Dados();
         dados.loadUsers();
 
         List<Usuario> usuarios = dados.getUsuarios();

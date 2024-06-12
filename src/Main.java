@@ -2,10 +2,10 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        new Dados();
+        Dados dados = new Dados();
 
         SwingUtilities.invokeLater(() -> {
-            LoginFrame loginFrame = new LoginFrame();
+            LoginFrame loginFrame = new LoginFrame(dados);
             loginFrame.setVisible(true);
         });
     }

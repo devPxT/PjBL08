@@ -46,13 +46,17 @@ public class Dados {
         }
     }
 
-    public void saveUsers(Usuario u) {
-        this.usuarios.add(u);
+    public void saveUsers() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
-            oos.writeObject(usuarios);
+            oos.writeObject(this.usuarios);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void saveUser(Usuario u) { //cadastro de usuario
+        this.usuarios.add(u);
+        saveUsers();
     }
 
     @SuppressWarnings("unchecked")
@@ -73,13 +77,19 @@ public class Dados {
         }
     }
 
-    public void saveEstoque(Produto p) {
-        this.estoque.add(p);
+    public void saveEstoque() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ESTOQUE_FILE))) {
             oos.writeObject(estoque);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void saveProduto(Produto p, Vendedor vendedor) {
+        estoque.add(p);
+        vendedor.adicionarProduto(p);
+        saveEstoque();
+        saveUsers();
     }
 
     public int getProdutoID() {
@@ -89,6 +99,16 @@ public class Dados {
             int lastIndex = estoque.size() - 1;
             return estoque.get(lastIndex).getIdProduto() + 1; //retorna o último ID + 1
         }
+    }
+
+    public boolean removeProdutoPorId(int idProduto) {
+        for (Produto produto : estoque) {
+            if (produto.getIdProduto() == idProduto) {
+                estoque.remove(produto);
+                return true;
+            }
+        }
+        return false; //produto não encontrado
     }
 
 

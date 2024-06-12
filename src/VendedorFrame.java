@@ -3,16 +3,21 @@ import java.awt.*;
 import java.util.List;
 
 public class VendedorFrame extends JFrame {
-    Dados dados = new Dados();
+    private Vendedor vendedor;
 
-    public VendedorFrame() {
+    private Dados dados;
+
+    public VendedorFrame(Vendedor vendedor, Dados dados) {
+        this.vendedor = vendedor;
+        this.dados = dados;
+
         setTitle("Menu Vendedor");
         setSize(640, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(4, 1));
+        panel.setLayout(new GridLayout(5, 1));
 
         JButton listarButton = new JButton("Listar Produtos");
         listarButton.addActionListener(e -> listarEstoque());
@@ -23,16 +28,24 @@ public class VendedorFrame extends JFrame {
         JButton cadastrarButton = new JButton("Cadastrar Produto");
         cadastrarButton.addActionListener(e -> cadastrarProduto());
 
+        JButton saldoButton = new JButton("Visualizar Saldo");
+        saldoButton.addActionListener(e -> visualizarSaldo());
+
         panel.add(listarButton);
         panel.add(buscarButton);
         panel.add(cadastrarButton);
+        panel.add(saldoButton);
         panel.add(deslogarButton());
 
         add(panel);
     }
 
+    private void visualizarSaldo() {
+        String message = "Saldo atual: " + vendedor.getSaldo();
+        JOptionPane.showMessageDialog(this, message);
+    }
+
     private void listarEstoque() {
-        // dados.loadUsers();
         dados.loadEstoque();
         List<Produto> estoque = dados.getEstoque();
 
@@ -49,7 +62,7 @@ public class VendedorFrame extends JFrame {
 
     private void buscarProdutoPorId() {
         dados.loadEstoque();
-        List<Produto> estoque = dados.getEstoque();
+        // List<Produto> estoque = dados.getEstoque();
 
         while (true) {
             String idStr = JOptionPane.showInputDialog("Digite o ID do produto:");
@@ -58,7 +71,7 @@ public class VendedorFrame extends JFrame {
                     break;
                 }
                 int id = Integer.parseInt(idStr);
-                for (Produto produto : estoque) {
+                for (Produto produto : dados.getEstoque()) {
                     if (produto.getIdProduto() == id) {
                         JOptionPane.showMessageDialog(this, "Produto encontrado:\n" + produto.imprimeDescricao());
                         return;
@@ -107,7 +120,6 @@ public class VendedorFrame extends JFrame {
                     default:
                         JOptionPane.showMessageDialog(panel, "Opção inválida.");
                 }
-                // incrementNextId();
             });
             panel.add(button);
         }
@@ -167,7 +179,7 @@ public class VendedorFrame extends JFrame {
     
                 dados.loadEstoque();
                 Produto roupa = new Roupa(dados.getProdutoID(), newPreco, genero, material, cor, marca, tamanho);
-                dados.saveEstoque(roupa);
+                dados.saveProduto(roupa, vendedor);
     
                 JOptionPane.showMessageDialog(this, "Roupa cadastrada com sucesso.");
                 break;
@@ -241,7 +253,7 @@ public class VendedorFrame extends JFrame {
 
                 dados.loadEstoque();
                 Produto computador = new Computador(dados.getProdutoID(), newPreco, sistemaOperacional, newFonte, conectividade, newGarantia, mouse);
-                dados.saveEstoque(computador);
+                dados.saveProduto(computador, vendedor);
 
                 JOptionPane.showMessageDialog(this, "Computador cadastrado com sucesso.");
             } catch (NumberFormatException e) {
@@ -264,7 +276,7 @@ public class VendedorFrame extends JFrame {
 
             dados.loadEstoque();
             Produto celular = new Celular(dados.getProdutoID(), preco, sistemaOperacional, fonte, conectividade, garantia, bateria);
-            dados.saveEstoque(celular);
+            dados.saveProduto(celular, vendedor);
 
             JOptionPane.showMessageDialog(this, "Celular cadastrado com sucesso.");
         } catch (NumberFormatException e) {
@@ -283,7 +295,7 @@ public class VendedorFrame extends JFrame {
 
             dados.loadEstoque();
             Produto carro = new Carro(dados.getProdutoID(), preco, marca, modelo, ano, portas, tamanhoPortaMalas);
-            dados.saveEstoque(carro);
+            dados.saveProduto(carro, vendedor);
 
             JOptionPane.showMessageDialog(this, "Carro cadastrado com sucesso.");
         } catch (NumberFormatException e) {
@@ -301,7 +313,7 @@ public class VendedorFrame extends JFrame {
 
             dados.loadEstoque();
             Produto moto = new Moto(dados.getProdutoID(), preco, marca, modelo, ano, tipo);
-            dados.saveEstoque(moto);
+            dados.saveProduto(moto, vendedor);
 
             JOptionPane.showMessageDialog(this, "Moto cadastrada com sucesso.");
         } catch (NumberFormatException e) {
@@ -319,7 +331,7 @@ public class VendedorFrame extends JFrame {
 
             dados.loadEstoque();
             Produto eletroDomestico = new EletroDomestico(dados.getProdutoID(), preco, marca, modelo, volume, eficienciaEnergetica);
-            dados.saveEstoque(eletroDomestico);
+            dados.saveProduto(eletroDomestico, vendedor);
 
             JOptionPane.showMessageDialog(this, "Eletrodoméstico cadastrado com sucesso.");
         } catch (NumberFormatException e) {
@@ -327,11 +339,12 @@ public class VendedorFrame extends JFrame {
         }
     }
 
-    public JButton deslogarButton() {
+    private JButton deslogarButton() {
         JButton logoutButton = new JButton("Deslogar");
+        logoutButton.setForeground(Color.RED);
         logoutButton.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
-                LoginFrame loginFrame = new LoginFrame();
+                LoginFrame loginFrame = new LoginFrame(dados);
                 loginFrame.setVisible(true);
             });
             JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(logoutButton);
