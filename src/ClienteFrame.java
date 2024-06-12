@@ -156,6 +156,12 @@ public class ClienteFrame extends JFrame {
         }
     }
 
+    private void verificarSaldoRemover(double saldo, double total) throws ExcecaoSaldoInsuficiente {
+        if (saldo < total) {
+            throw new ExcecaoSaldoInsuficiente("Seu saldo não pode ficar negativo.");
+        }
+    }
+
     private void limparCarrinho() {
         cliente.getCarrinho().clear();
         JOptionPane.showMessageDialog(this, "O carrinho foi esvaziado.");
@@ -163,12 +169,36 @@ public class ClienteFrame extends JFrame {
 
     private void gerenciarSaldo() {
         String message = "Saldo atual: " + cliente.getSaldo();
-        String[] options = {"Adicionar Saldo", "Voltar"};
+        String[] options = {"Voltar", "Remover Saldo", "Adicionar Saldo"};
         int choice = JOptionPane.showOptionDialog(this, message, "Gerenciar Saldo",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 
-        if (choice == 0) {
+        if (choice == 1) {
+            String valorStr = JOptionPane.showInputDialog("Digite o valor para remover:");
+            if (valorStr == null) {
+                return;
+            }
+
+            try {
+                double valor = Double.parseDouble(valorStr);
+                verificarSaldoRemover(cliente.getSaldo(), valor);
+
+                cliente.debitarSaldo(valor);
+                dados.saveUsers();
+                JOptionPane.showMessageDialog(this, "Saldo atualizado.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Valor inválido.");
+
+            } catch (ExcecaoSaldoInsuficiente e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
+        }
+
+        else if (choice == 2) {
             String valorStr = JOptionPane.showInputDialog("Digite o valor para adicionar:");
+            if (valorStr == null) {
+                return;
+            }
             try {
                 double valor = Double.parseDouble(valorStr);
                 cliente.adicionarSaldo(valor);
