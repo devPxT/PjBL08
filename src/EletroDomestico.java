@@ -1,4 +1,4 @@
-public class EletroDomestico extends Produto{
+public abstract class EletroDomestico extends Produto{
     private String marca;
     private String modelo;
     private float volume;
@@ -12,8 +12,21 @@ public class EletroDomestico extends Produto{
         this.eficienciaEnergetica = eficienciaEnergetica;
     }
 
+    public String getMarca() {
+        return marca;
+    }
+    public String getModelo() {
+        return modelo;
+    }
+    public float getVolume() {
+        return volume;
+    }
+    public String getEficienciaEnergetica() {
+        return eficienciaEnergetica;
+    }
+
     @Override
     public String imprimeDescricao() {
         return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Marca: " + marca + ", Modelo: " + modelo + ", Volume em litros: " + volume + ", Eficiência Energética: " + eficienciaEnergetica;
     }
-}
+} 

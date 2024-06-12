@@ -10,6 +10,6 @@ public class Carro extends Automovel {
 
     @Override
     public String imprimeDescricao() {
-        return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Portas: " + portas + ", Tamanho Porta Malas: " + tamanhoPortaMalas + " litros";
+        return getClass().getSimpleName() + " ➔ ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Marca: " +getMarca()+ ", Modelo: " +getModelo()+ ", Ano: " +getAno()+ ", Portas: " + portas + ", Tamanho Porta Malas: " + tamanhoPortaMalas + " litros";
     }
 }

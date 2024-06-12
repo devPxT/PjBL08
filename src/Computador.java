@@ -8,6 +8,6 @@ public class Computador extends Eletronico {
 
     @Override
     public String imprimeDescricao() {
-        return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Mouse: " + (mouse ? "Sim" : "Não");
+        return getClass().getSimpleName() + " ➔ ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", SO: " +getSistemaOperacional()+ ", Fonte: " +getFonte()+ " W" + ", Conectividade: " +getConectividade()+ ", Garantia: " +getGarantia()+ " Meses" + ", Mouse: " + (mouse ? "Sim" : "Não");
     }
 }

@@ -10,8 +10,18 @@ public abstract class Automovel extends Produto {
         this.ano = ano;
     }
 
+    public String getMarca() {
+        return marca;
+    }
+    public String getModelo() {
+        return modelo;
+    }
+    public int getAno() {
+        return ano;
+    }
+
     @Override
     public String imprimeDescricao() {
-        return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Marca: " + marca + ", Modelo: " + modelo + ", Ano: " + ano;
+        return getClass().getSimpleName() + " ➔ ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Marca: " + marca + ", Modelo: " + modelo + ", Ano: " + ano;
     }
 }

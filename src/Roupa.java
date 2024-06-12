@@ -8,6 +8,6 @@ public class Roupa extends Vestimenta {
 
     @Override
     public String imprimeDescricao() {
-        return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Gênero: "  +getGenero()+ ", Material: " +getMaterial()+ ", Cor: " +getCor()+ ", Marca: " +getMarca()+ ", Tamanho: " + tamanho;
+        return getClass().getSimpleName() + " ➔ ID: " +getIdProduto()+ ", Preço: " +getPreco()+ ", Gênero: "  +getGenero()+ ", Material: " +getMaterial()+ ", Cor: " +getCor()+ ", Marca: " +getMarca()+ ", Tamanho: " + tamanho;
     }
 }

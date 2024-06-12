@@ -91,9 +91,9 @@ public class VendedorFrame extends JFrame {
         dialog.setLocationRelativeTo(this);
     
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(6, 1)); // 6 rows, 1 column
+        panel.setLayout(new GridLayout(6, 1));
     
-        String[] options = {"Roupa", "Computador", "Celular", "Carro", "Moto", "Eletrodoméstico"};
+        String[] options = {"Roupa", "Computador", "Celular", "Carro", "Moto", "Fogão"};
         for (int i = 0; i < options.length; i++) {
             JButton button = new JButton(options[i]);
             final int optionIndex = i;
@@ -115,7 +115,7 @@ public class VendedorFrame extends JFrame {
                         cadastrarMoto();
                         break;
                     case 5:
-                        cadastrarEletroDomestico();
+                        cadastrarFogao();
                         break;
                     default:
                         JOptionPane.showMessageDialog(panel, "Opção inválida.");
@@ -138,71 +138,83 @@ public class VendedorFrame extends JFrame {
     
     private void cadastrarRoupa() {
         boolean cancel = false;
+
         while (true) {
             try {
                 String preco = inputWithCheck("Informe o preço:");
                 if (preco == null) {
                     cancel = true;
-                    break; // User pressed cancel
+                    break; // Usuário pressionou cancelar
                 }
                 double newPreco = Double.parseDouble(preco);
-    
-                String genero = inputWithCheck("Informe o gênero:");
+
+                String[] generos = {"Masculino", "Feminino"};
+                String genero = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe o gênero:",
+                        "Seleção de Gênero",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        generos,
+                        generos[0]);
                 if (genero == null) {
                     cancel = true;
                     break;
                 }
-    
-                String material = inputWithCheck("Informe o material:");
+
+                String[] materiais = {"Algodão", "Nylon"};
+                String material = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe o material:",
+                        "Seleção de Material",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        materiais,
+                        materiais[0]);
                 if (material == null) {
                     cancel = true;
                     break;
                 }
-    
+
                 String cor = inputWithCheck("Informe a cor:");
                 if (cor == null) {
                     cancel = true;
                     break;
                 }
-    
+
                 String marca = inputWithCheck("Informe a marca:");
                 if (marca == null) {
                     cancel = true;
                     break;
                 }
 
-                String tamanho = inputWithCheck("Informe o tamanho:");
+                String[] tamanhos = {"PP", "P", "M", "G", "GG"};
+                String tamanho = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe o tamanho:",
+                        "Seleção de Tamanho",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tamanhos,
+                        tamanhos[0]);
                 if (tamanho == null) {
                     cancel = true;
                     break;
                 }
-    
+
                 dados.loadEstoque();
                 Produto roupa = new Roupa(dados.getProdutoID(), newPreco, genero, material, cor, marca, tamanho);
                 dados.saveProduto(roupa, vendedor);
-    
-                JOptionPane.showMessageDialog(this, "Roupa cadastrada com sucesso.");
+
+                JOptionPane.showMessageDialog(null, "Roupa cadastrada com sucesso.");
                 break;
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Preço inválido. Por favor, insira um valor válido.");
+                JOptionPane.showMessageDialog(null, "Entrada inválida.");
             }
         }
+
         if (cancel) {
-            JOptionPane.showMessageDialog(this, "Cadastro de roupa cancelado.");
-        }
-    }
-    
-    private String inputWithCheck(String message) {
-        while (true) {
-            String input = JOptionPane.showInputDialog(message);
-            if (input == null) {
-                return null; // usuario clicou no cancel
-            }
-            if (input.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Entrada inválida. Por favor, tente novamente.");
-            } else {
-                return input;
-            }
+            JOptionPane.showMessageDialog(null, "Cadastro de roupa cancelado.");
         }
     }
 
@@ -218,8 +230,16 @@ public class VendedorFrame extends JFrame {
                 
                 double newPreco = Double.parseDouble(preco);
 
-                String sistemaOperacional = inputWithCheck("Informe o sistema operacional:");
-                if (sistemaOperacional == null) {
+                String[] sistemaOperacional = {"Windows", "Linux", "MacOS"};
+                String OS = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe o sistema operaional:",
+                        "Seleção de Sistema Operacional",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        sistemaOperacional,
+                        sistemaOperacional[0]);
+                if (OS == null) {
                     cancel = true;
                     break;
                 }
@@ -252,90 +272,314 @@ public class VendedorFrame extends JFrame {
                 // }
 
                 dados.loadEstoque();
-                Produto computador = new Computador(dados.getProdutoID(), newPreco, sistemaOperacional, newFonte, conectividade, newGarantia, mouse);
+                Produto computador = new Computador(dados.getProdutoID(), newPreco, OS, newFonte, conectividade, newGarantia, mouse);
                 dados.saveProduto(computador, vendedor);
 
                 JOptionPane.showMessageDialog(this, "Computador cadastrado com sucesso.");
+                break;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Entrada inválida.");
             }
         }
+
         if (cancel) {
             JOptionPane.showMessageDialog(this, "Cadastro de computador cancelado.");
         }
     }
 
     private void cadastrarCelular() {
-        try {
-            double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
-            String sistemaOperacional = JOptionPane.showInputDialog("Informe o sistema operacional:");
-            int fonte = Integer.parseInt(JOptionPane.showInputDialog("Informe a fonte (em watts):"));
-            String conectividade = JOptionPane.showInputDialog("Informe a conectividade:");
-            int garantia = Integer.parseInt(JOptionPane.showInputDialog("Informe a garantia (em meses):"));
-            float bateria = Float.parseFloat(JOptionPane.showInputDialog("Informe a capacidade da bateria (em mAh):"));
+        boolean cancel = false;
+        while (true) {
+            try {
+                String preco = inputWithCheck("Informe o preço:");
+                if (preco == null) {
+                    cancel = true;
+                    break;
+                }
+                double newPreco = Double.parseDouble(preco);
+                
+                String[] sistemaOperacional = {"Android", "IOS"};
+                String OS = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe o sistema operaional:",
+                        "Seleção de Sistema Operacional",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        sistemaOperacional,
+                        sistemaOperacional[0]);
+                if (OS == null) {
+                    cancel = true;
+                    break;
+                }
 
-            dados.loadEstoque();
-            Produto celular = new Celular(dados.getProdutoID(), preco, sistemaOperacional, fonte, conectividade, garantia, bateria);
-            dados.saveProduto(celular, vendedor);
+                String fonte = inputWithCheck("Informe a fonte (em watts):");
+                if (fonte == null) {
+                    cancel = true;
+                    break;
+                }
+                int newFonte = Integer.parseInt(fonte);
 
-            JOptionPane.showMessageDialog(this, "Celular cadastrado com sucesso.");
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Entrada inválida.");
+
+                String[] tiposConectividade = {"Wi-Fi", "Bluetooth", "USB", "Ethernet", "3G", "4G"};
+                String conectividade = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe a conectividade:",
+                        "Seleção de Conectividade",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tiposConectividade,
+                        tiposConectividade[0]);
+                if (conectividade == null) {
+                    cancel = true;
+                    break;
+                }
+                
+
+                String garantia = inputWithCheck("Informe a garantia (em meses):");
+                if (garantia == null) {
+                    cancel = true;
+                    break;
+                }
+                int newGarantia = Integer.parseInt(garantia);
+
+                String bateria = inputWithCheck("Informe a capacidade da bateria (em mAh):");
+                if (bateria == null) {
+                    cancel = true;
+                    break;
+                }
+                float newBateria = Float.parseFloat(bateria);
+
+                dados.loadEstoque();
+                Produto celular = new Celular(dados.getProdutoID(), newPreco, OS, newFonte, conectividade, newGarantia, newBateria);
+                dados.saveProduto(celular, vendedor);
+
+                JOptionPane.showMessageDialog(this, "Celular cadastrado com sucesso.");
+                break;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
+        if (cancel) {
+            JOptionPane.showMessageDialog(this, "Cadastro de celular cancelado.");
         }
     }
 
     private void cadastrarCarro() {
-        try {
-            double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
-            String marca = JOptionPane.showInputDialog("Informe a marca:");
-            String modelo = JOptionPane.showInputDialog("Informe o modelo:");
-            int ano = Integer.parseInt(JOptionPane.showInputDialog("Informe o ano:"));
-            int portas = Integer.parseInt(JOptionPane.showInputDialog("Informe o número de portas:"));
-            float tamanhoPortaMalas = Float.parseFloat(JOptionPane.showInputDialog("Informe o tamanho do porta-malas (em litros):"));
+        boolean cancel = false;
+        while(true) {
+            try {
+                String preco = inputWithCheck("Informe o preço:");
+                if (preco == null) {
+                    cancel = true;
+                    break;
+                }
+                double newPreco = Double.parseDouble(preco);
 
-            dados.loadEstoque();
-            Produto carro = new Carro(dados.getProdutoID(), preco, marca, modelo, ano, portas, tamanhoPortaMalas);
-            dados.saveProduto(carro, vendedor);
+                String marca = inputWithCheck("Informe a marca:");
+                if (marca == null) {
+                    cancel = true;
+                    break;
+                }
+                
+                String modelo = inputWithCheck("Informe o modelo:");
+                if (modelo == null) {
+                    cancel = true;
+                    break;
+                }
 
-            JOptionPane.showMessageDialog(this, "Carro cadastrado com sucesso.");
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Entrada inválida.");
+                String ano = inputWithCheck("Informe o ano:");
+                if (ano == null) {
+                    cancel = true;
+                    break;
+                }
+                int newAno = Integer.parseInt(ano);
+                
+                String[] portas = {"2", "4"};
+                String porta = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe o número de portas:",
+                        "Seleção de Portas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        portas,
+                        portas[0]);
+                if (porta == null) {
+                    cancel = true;
+                    break;
+                }
+                int newPortas = Integer.parseInt(porta);
+
+                String tamanhoPortaMalas = inputWithCheck("Informe o tamanho do porta-malas (em litros):");
+                if (tamanhoPortaMalas == null) {
+                    cancel = true;
+                    break;
+                }
+                float newTamanhoPortaMalas = Float.parseFloat(tamanhoPortaMalas);
+
+                dados.loadEstoque();
+                Produto carro = new Carro(dados.getProdutoID(), newPreco, marca, modelo, newAno, newPortas, newTamanhoPortaMalas);
+                dados.saveProduto(carro, vendedor);
+
+                JOptionPane.showMessageDialog(this, "Carro cadastrado com sucesso.");
+                break;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
+
+        if (cancel) {
+            JOptionPane.showMessageDialog(this, "Cadastro de carro cancelado.");
         }
     }
 
     private void cadastrarMoto() {
-        try {
-            double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
-            String marca = JOptionPane.showInputDialog("Informe a marca:");
-            String modelo = JOptionPane.showInputDialog("Informe o modelo:");
-            int ano = Integer.parseInt(JOptionPane.showInputDialog("Informe o ano:"));
-            String tipo = JOptionPane.showInputDialog("Informe o tipo:");
+        boolean cancel = false;
+        while(true) {
+            try {
+                String preco = inputWithCheck("Informe o preço:");
+                if (preco == null) {
+                    cancel = true;
+                    break;
+                }
+                double newPreco = Double.parseDouble(preco);
 
-            dados.loadEstoque();
-            Produto moto = new Moto(dados.getProdutoID(), preco, marca, modelo, ano, tipo);
-            dados.saveProduto(moto, vendedor);
+                String marca = inputWithCheck("Informe a marca:");
+                if (marca == null) {
+                    cancel = true;
+                    break;
+                }
+                
+                String modelo = inputWithCheck("Informe o modelo:");
+                if (modelo == null) {
+                    cancel = true;
+                    break;
+                }
 
-            JOptionPane.showMessageDialog(this, "Moto cadastrada com sucesso.");
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Entrada inválida.");
+                String ano = inputWithCheck("Informe o ano:");
+                if (ano == null) {
+                    cancel = true;
+                    break;
+                }
+                int newAno = Integer.parseInt(ano);
+
+                String[] tipoMoto = {"Naked", "Esportiva", "Trail", "Street", "Scooter", "Custom", "MotoCross"};
+                String tipo = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe o tipo:",
+                        "Seleção de Tipo",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tipoMoto,
+                        tipoMoto[0]);
+                if (tipo == null) {
+                    cancel = true;
+                    break;
+                }
+
+                dados.loadEstoque();
+                Produto moto = new Moto(dados.getProdutoID(), newPreco, marca, modelo, newAno, tipo);
+                dados.saveProduto(moto, vendedor);
+
+                JOptionPane.showMessageDialog(this, "Moto cadastrada com sucesso.");
+                break;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
         }
+
+        if (cancel) {
+            JOptionPane.showMessageDialog(this, "Cadastro de carro cancelado.");
+        }
+        
     }
 
-    private void cadastrarEletroDomestico() {
-        try {
-            double preco = Double.parseDouble(JOptionPane.showInputDialog("Informe o preço:"));
-            String marca = JOptionPane.showInputDialog("Informe a marca:");
-            String modelo = JOptionPane.showInputDialog("Informe o modelo:");
-            float volume = Float.parseFloat(JOptionPane.showInputDialog("Informe o volume em litros:"));
-            String eficienciaEnergetica = JOptionPane.showInputDialog("Informe a Eficiência Energética:");
+    private void cadastrarFogao() {
+        boolean cancel = false;
+        while(true) {
+            try {
+                String preco = inputWithCheck("Informe o preço:");
+                if (preco == null) {
+                    cancel = true;
+                    break;
+                }
+                double newPreco = Double.parseDouble(preco);
 
-            dados.loadEstoque();
-            Produto eletroDomestico = new EletroDomestico(dados.getProdutoID(), preco, marca, modelo, volume, eficienciaEnergetica);
-            dados.saveProduto(eletroDomestico, vendedor);
+                String marca = inputWithCheck("Informe a marca:");
+                if (marca == null) {
+                    cancel = true;
+                    break;
+                }
+                
+                String modelo = inputWithCheck("Informe o modelo:");
+                if (modelo == null) {
+                    cancel = true;
+                    break;
+                }
+                
+                String volume = inputWithCheck("Informe o volume em litros:");
+                if (volume == null) {
+                    cancel = true;
+                    break;
+                }
+                float newVolume = Float.parseFloat(volume);
+                
+                String[] eficienciaEnergetica = {"A", "B", "C", "D", "E", "F"};
+                String ef_en = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe a eficiência energética:",
+                        "Seleção de Eficiência Energética",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        eficienciaEnergetica,
+                        eficienciaEnergetica[0]);
+                if (ef_en == null) {
+                    cancel = true;
+                    break;
+                }
+                
+                String[] numeroBocas = {"1", "2", "3", "4", "5", "6"};
+                String bocas = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Informe a quantidade de bocas:",
+                        "Seleção de número de bocas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        numeroBocas,
+                        numeroBocas[0]);
+                if (bocas == null) {
+                    cancel = true;
+                    break;
+                }
+                int newBocas = Integer.parseInt(bocas);
 
-            JOptionPane.showMessageDialog(this, "Eletrodoméstico cadastrado com sucesso.");
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Entrada inválida.");
+                dados.loadEstoque();
+                Produto fogao = new Fogao(dados.getProdutoID(), newPreco, marca, modelo, newVolume, ef_en, newBocas);
+				dados.saveProduto(fogao, vendedor);
+
+                JOptionPane.showMessageDialog(this, "Fogão cadastrado com sucesso.");
+                break;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Entrada inválida.");
+            }
+        }
+
+        if (cancel) {
+            JOptionPane.showMessageDialog(this, "Cadastro de fogão cancelado.");
+        }
+
+    }
+
+    private String inputWithCheck(String message) {
+        while (true) {
+            String input = JOptionPane.showInputDialog(message);
+            if (input == null) {
+                return null; //usuario cancelou
+            }
+            if (input.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Entrada inválida. Por favor, tente novamente.");
+            } else {
+                return input.trim();
+            }
         }
     }
 

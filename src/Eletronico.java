@@ -12,9 +12,22 @@ public class Eletronico extends Produto {
         this.garantia = garantia;
     }
 
+    public String getSistemaOperacional() {
+        return sistemaOperacional;
+    }
+    public int getFonte() {
+        return fonte;
+    }
+    public String getConectividade() {
+        return conectividade;
+    }
+    public int getGarantia() {
+        return garantia;
+    }
+
     @Override
     public String imprimeDescricao() {
-        return "ID: " +getIdProduto()+ ", Preço: " +getPreco()+ 
+        return getClass().getSimpleName() + " ➔ ID: " +getIdProduto()+ ", Preço: " +getPreco()+ 
         ", Sistema Operacional: " + sistemaOperacional + ", Fonte: " + fonte + ", Conectividade: " + conectividade + ", Garantia: " + garantia + " meses";
     }
 }
