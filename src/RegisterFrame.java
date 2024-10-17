@@ -7,8 +7,6 @@ import java.util.InputMismatchException;
 import java.util.List;
 
 public class RegisterFrame extends JFrame {
-    private Dados dados;
-
     private JTextField nomeField;
     private JFormattedTextField cpfField;
     private JFormattedTextField cnpjField;
@@ -19,8 +17,8 @@ public class RegisterFrame extends JFrame {
     private JPanel painelCEPeCPNJ;
     private JPanel painelCEPeCPNJText;
 
-    public RegisterFrame(Dados dados) {
-        this.dados = dados;
+    public RegisterFrame() {
+        DadosSingleton dados = DadosSingleton.getInstance();
 
         setTitle("Cadastro");
         setSize(400, 300);
@@ -87,7 +85,7 @@ public class RegisterFrame extends JFrame {
         JButton backButton = new JButton("Voltar");
         backButton.addActionListener(e -> {
             dispose();
-            LoginFrame loginFrame = new LoginFrame(dados);
+            LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);
         });
 
@@ -201,6 +199,7 @@ public class RegisterFrame extends JFrame {
         } else {
             usuario = new Cliente(nome, cpf, login, senha, cep);
         }
+        DadosSingleton dados = DadosSingleton.getInstance();
 
         dados.loadUsers();
         dados.saveUser(usuario);
@@ -209,6 +208,8 @@ public class RegisterFrame extends JFrame {
     }
 
     private boolean isLoginRepetido(String login, String userType) {
+        DadosSingleton dados = DadosSingleton.getInstance();
+
         dados.loadUsers();
 
         List<Usuario> usuarios = dados.getUsuarios();

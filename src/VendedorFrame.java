@@ -5,11 +5,10 @@ import java.util.List;
 public class VendedorFrame extends JFrame {
     private Vendedor vendedor;
 
-    private Dados dados;
-
-    public VendedorFrame(Vendedor vendedor, Dados dados) {
+    public VendedorFrame(Vendedor vendedor) {
         this.vendedor = vendedor;
-        this.dados = dados;
+
+        DadosSingleton dados = DadosSingleton.getInstance();
 
         setTitle("Menu Vendedor");
         setSize(640, 480);
@@ -46,6 +45,8 @@ public class VendedorFrame extends JFrame {
     }
 
     private void listarEstoque() {
+        DadosSingleton dados = DadosSingleton.getInstance();
+
         dados.loadEstoque();
         List<Produto> estoque = dados.getEstoque();
 
@@ -61,6 +62,8 @@ public class VendedorFrame extends JFrame {
     }
 
     private void buscarProdutoPorId() {
+        DadosSingleton dados = DadosSingleton.getInstance();
+
         dados.loadEstoque();
         // List<Produto> estoque = dados.getEstoque();
 
@@ -139,6 +142,7 @@ public class VendedorFrame extends JFrame {
     private void cadastrarRoupa() {
         boolean cancel = false;
 
+        DadosSingleton dados = DadosSingleton.getInstance();
         while (true) {
             try {
                 String preco = inputWithCheck("Informe o preço:");
@@ -220,6 +224,8 @@ public class VendedorFrame extends JFrame {
 
     private void cadastrarComputador() {
         boolean cancel = false;
+
+        DadosSingleton dados = DadosSingleton.getInstance();
         while (true) {
             try {
                 String preco = inputWithCheck("Informe o preço:");
@@ -289,6 +295,8 @@ public class VendedorFrame extends JFrame {
 
     private void cadastrarCelular() {
         boolean cancel = false;
+
+        DadosSingleton dados = DadosSingleton.getInstance();
         while (true) {
             try {
                 String preco = inputWithCheck("Informe o preço:");
@@ -366,6 +374,8 @@ public class VendedorFrame extends JFrame {
 
     private void cadastrarCarro() {
         boolean cancel = false;
+
+        DadosSingleton dados = DadosSingleton.getInstance();
         while(true) {
             try {
                 String preco = inputWithCheck("Informe o preço:");
@@ -434,6 +444,8 @@ public class VendedorFrame extends JFrame {
 
     private void cadastrarMoto() {
         boolean cancel = false;
+
+        DadosSingleton dados = DadosSingleton.getInstance();
         while(true) {
             try {
                 String preco = inputWithCheck("Informe o preço:");
@@ -495,6 +507,8 @@ public class VendedorFrame extends JFrame {
 
     private void cadastrarFogao() {
         boolean cancel = false;
+
+        DadosSingleton dados = DadosSingleton.getInstance();
         while(true) {
             try {
                 String preco = inputWithCheck("Informe o preço:");
@@ -588,7 +602,7 @@ public class VendedorFrame extends JFrame {
         logoutButton.setForeground(Color.RED);
         logoutButton.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
-                LoginFrame loginFrame = new LoginFrame(dados);
+                LoginFrame loginFrame = new LoginFrame();
                 loginFrame.setVisible(true);
             });
             JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(logoutButton);

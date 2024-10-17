@@ -7,11 +7,7 @@ public class LoginFrame extends JFrame {
     private JPasswordField passwordField;
     private JComboBox<String> userTypeComboBox;
 
-    private Dados dados;
-
-    public LoginFrame(Dados dados) {
-        this.dados = dados;
-
+    public LoginFrame() {
         setTitle("Login");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,10 +33,10 @@ public class LoginFrame extends JFrame {
                 if (usuarioLogado != null) {
                     dispose();
                     if (usuarioLogado instanceof Vendedor) {
-                        VendedorFrame vendedorFrame = new VendedorFrame((Vendedor) usuarioLogado, dados);
+                        VendedorFrame vendedorFrame = new VendedorFrame((Vendedor) usuarioLogado);
                         vendedorFrame.setVisible(true);
                     } else {
-                        ClienteFrame clienteFrame = new ClienteFrame((Cliente) usuarioLogado, dados);
+                        ClienteFrame clienteFrame = new ClienteFrame((Cliente) usuarioLogado);
                         clienteFrame.setVisible(true);
                     }
                 } else {
@@ -54,7 +50,7 @@ public class LoginFrame extends JFrame {
         JButton registerButton = new JButton("Cadastrar");
         registerButton.addActionListener(e -> {
             dispose();
-            RegisterFrame registerFrame = new RegisterFrame(dados);
+            RegisterFrame registerFrame = new RegisterFrame();
             registerFrame.setVisible(true);
         });
 
@@ -73,6 +69,8 @@ public class LoginFrame extends JFrame {
     }
 
     private Usuario login() throws IOException {
+        DadosSingleton dados = DadosSingleton.getInstance();
+
         String login = loginField.getText();
         String senha = new String(passwordField.getPassword());
         String userType = (String) userTypeComboBox.getSelectedItem();

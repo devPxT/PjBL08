@@ -8,16 +8,25 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dados {
+public class DadosSingleton {
     private String USERS_FILE = "users.dat"; //ARQUIVO DE ARMAZENAMENTO DE TODOS OS USUARIOS
     private String ESTOQUE_FILE = "estoque.dat"; //ARQUIVO DE ARMAZENAMENTO DO ESTOQUE
 
     private List<Usuario> usuarios;
     private List<Produto> estoque;
 
-    public Dados() {
+    private static DadosSingleton uniqueInstance;
+
+    private DadosSingleton() {
         loadUsers();
         loadEstoque();
+    }
+
+    public static DadosSingleton getInstance () {
+        if (uniqueInstance == null) {
+            uniqueInstance = new DadosSingleton();
+        }
+        return uniqueInstance;
     }
 
     public List<Usuario> getUsuarios() {

@@ -6,11 +6,8 @@ import java.util.List;
 public class ClienteFrame extends JFrame {
     private Cliente cliente;
 
-    private Dados dados;
-
-    public ClienteFrame(Cliente cliente, Dados dados) {
+    public ClienteFrame(Cliente cliente) {
         this.cliente = cliente;
-        this.dados = dados;
 
         setTitle("Menu Cliente");
         setSize(512, 400);
@@ -42,6 +39,8 @@ public class ClienteFrame extends JFrame {
     }
 
     private void listarEstoque() {
+        DadosSingleton dados = DadosSingleton.getInstance();
+
         dados.loadEstoque();
         List<Produto> estoque = dados.getEstoque();
 
@@ -57,6 +56,8 @@ public class ClienteFrame extends JFrame {
     }
 
     private void adicionarProdutoAoCarrinho() {
+        DadosSingleton dados = DadosSingleton.getInstance();
+
         dados.loadEstoque();
         
         List<Produto> estoque = new ArrayList<>();
@@ -108,6 +109,9 @@ public class ClienteFrame extends JFrame {
             message.append("O carrinho está vazio.");
             JOptionPane.showMessageDialog(this, message.toString());
         } else {
+            DadosSingleton dados = DadosSingleton.getInstance();
+
+
             for (Produto produto : carrinho) {
                 message.append(produto.imprimeDescricao()).append("\n");
                 total += produto.getPreco();
@@ -168,6 +172,8 @@ public class ClienteFrame extends JFrame {
     }
 
     private void gerenciarSaldo() {
+        DadosSingleton dados = DadosSingleton.getInstance();
+
         String message = "Saldo atual: " + cliente.getSaldo();
         String[] options = {"Voltar", "Remover Saldo", "Adicionar Saldo"};
         int choice = JOptionPane.showOptionDialog(this, message, "Gerenciar Saldo",
@@ -215,7 +221,7 @@ public class ClienteFrame extends JFrame {
         logoutButton.setForeground(Color.RED);
         logoutButton.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
-                LoginFrame loginFrame = new LoginFrame(dados);
+                LoginFrame loginFrame = new LoginFrame();
                 loginFrame.setVisible(true);
             });
             JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(logoutButton);
