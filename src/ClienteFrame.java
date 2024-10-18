@@ -102,32 +102,54 @@ public class ClienteFrame extends JFrame {
     private void visualizarCarrinho() {
         StringBuilder message = new StringBuilder();
         double total = 0.0;
-
-        List<Produto> carrinho = cliente.getCarrinho();
     
+        List<Produto> carrinho = cliente.getCarrinho();
+        
         if (carrinho.isEmpty()) {
             message.append("O carrinho está vazio.");
             JOptionPane.showMessageDialog(this, message.toString());
         } else {
             DadosSingleton dados = DadosSingleton.getInstance();
-
-
+    
             for (Produto produto : carrinho) {
                 message.append(produto.imprimeDescricao()).append("\n");
                 total += produto.getPreco();
             }
             message.append("Total: ").append(total);
-            message.append("\n\nDeseja finalizar a compra?");
-            // int option = JOptionPane.showConfirmDialog(this, message.toString(), "Finalizar Compra", JOptionPane.YES_NO_OPTION);
+            message.append("\n\nEscolha um método de pagamento:");
     
+            String[] opcoesPagamento = {"Cartão", "Dinheiro", "PayPal"};
+            int metodoPagamento = JOptionPane.showOptionDialog(this, message.toString(), "Finalizar Compra",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+                    null, opcoesPagamento, opcoesPagamento[0]);
+    
+            MetodoPagamento pagamento = null;
+            switch (metodoPagamento) {
+                case 0:
+                    pagamento = new PagamentoCartao();
+                    break;
+                case 1:
+                    pagamento = new PagamentoDinheiro();
+                    break;
+                case 2:
+                    pagamento = new PagamentoPaypal();
+                    break;
+                default:
+                    return;
+            }
+    
+            String confirmacaoMessage = "Deseja finalizar a compra?";
             Object[] options = {"Sim", "Não", "Limpar Carrinho"};
-            int option = JOptionPane.showOptionDialog(this, message.toString(), "Finalizar Compra",
+            int option = JOptionPane.showOptionDialog(this, confirmacaoMessage, "Finalizar Compra",
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, options, options[0]);
-
+    
             if (option == JOptionPane.YES_OPTION) {
                 try {
                     verificarSaldo(cliente.getSaldo(), total);
+                    String mensagemPagamento = pagamento.pagar(total);
+                    JOptionPane.showMessageDialog(this, mensagemPagamento, "Pagamento Realizado", JOptionPane.INFORMATION_MESSAGE);
+    
                     for (Produto produto : carrinho) {
                         for (Usuario usuario : dados.getUsuarios()) {
                             if (usuario instanceof Vendedor) {
@@ -143,14 +165,15 @@ public class ClienteFrame extends JFrame {
                     carrinho.clear();
                     dados.saveUsers();
                     dados.saveEstoque();
-                    JOptionPane.showMessageDialog(this, "Compra finalizada com sucesso.");
-
+                    JOptionPane.showMessageDialog(this, "Compra finalizada com sucesso.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+    
                 } catch (ExcecaoSaldoInsuficiente e) {
-                    JOptionPane.showMessageDialog(this, e.getMessage());
+                    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             } else if (option == JOptionPane.CANCEL_OPTION) {
                 limparCarrinho();
             }
+            
         }
     }
 

@@ -6,8 +6,10 @@ public class LoginFrame extends JFrame {
     private JTextField loginField;
     private JPasswordField passwordField;
     private JComboBox<String> userTypeComboBox;
+    private LoginFacade loginFacade;
 
     public LoginFrame() {
+        loginFacade = new LoginFacade();
         setTitle("Login");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +31,11 @@ public class LoginFrame extends JFrame {
         JButton loginButton = new JButton("Logar");
         loginButton.addActionListener(e -> {
             try {
-                Usuario usuarioLogado = login();
+                String login = loginField.getText();
+                String senha = new String(passwordField.getPassword());
+                String userType = (String) userTypeComboBox.getSelectedItem();
+                
+                Usuario usuarioLogado = loginFacade.autenticar(login, senha, userType);
                 if (usuarioLogado != null) {
                     dispose();
                     if (usuarioLogado instanceof Vendedor) {
