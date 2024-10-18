@@ -101,27 +101,35 @@ public class VendedorFrame extends JFrame {
             JButton button = new JButton(options[i]);
             final int optionIndex = i;
             button.addActionListener(e -> {
+                Produto produto = null;
+
                 switch (optionIndex) {
                     case 0:
-                        cadastrarRoupa();
+                        produto = cadastrarRoupa();
                         break;
                     case 1:
-                        cadastrarComputador();
+                        produto = cadastrarComputador();
                         break;
                     case 2:
-                        cadastrarCelular();
+                        produto = cadastrarCelular();
                         break;
                     case 3:
-                        cadastrarCarro();
+                        produto = cadastrarCarro();
                         break;
                     case 4:
-                        cadastrarMoto();
+                        produto = cadastrarMoto();
                         break;
                     case 5:
-                        cadastrarFogao();
+                        produto = cadastrarFogao();
                         break;
                     default:
                         JOptionPane.showMessageDialog(panel, "Opção inválida.");
+                }
+                if (produto != null) {
+                    produto.adicionarObserver(vendedor);
+                    produto.notificarObserver("Produto com ID -> " +produto.getIdProduto()+ " cadastrado e adicionado observador: " +vendedor.getNome());
+                } else {
+                    System.out.println("Produto null e observador NÃO adicionado (cancelado)");
                 }
             });
             panel.add(button);
@@ -139,7 +147,7 @@ public class VendedorFrame extends JFrame {
         dialog.setVisible(true);
     }
     
-    private void cadastrarRoupa() {
+    private Produto cadastrarRoupa() {
         boolean cancel = false;
 
         DadosSingleton dados = DadosSingleton.getInstance();
@@ -211,7 +219,8 @@ public class VendedorFrame extends JFrame {
                 dados.saveProduto(roupa, vendedor);
 
                 JOptionPane.showMessageDialog(null, "Roupa cadastrada com sucesso.");
-                break;
+                return roupa;
+                // break;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Entrada inválida.");
             }
@@ -220,9 +229,10 @@ public class VendedorFrame extends JFrame {
         if (cancel) {
             JOptionPane.showMessageDialog(null, "Cadastro de roupa cancelado.");
         }
+        return null;
     }
 
-    private void cadastrarComputador() {
+    private Produto cadastrarComputador() {
         boolean cancel = false;
 
         DadosSingleton dados = DadosSingleton.getInstance();
@@ -282,7 +292,7 @@ public class VendedorFrame extends JFrame {
                 dados.saveProduto(computador, vendedor);
 
                 JOptionPane.showMessageDialog(this, "Computador cadastrado com sucesso.");
-                break;
+                return computador;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Entrada inválida.");
             }
@@ -291,9 +301,10 @@ public class VendedorFrame extends JFrame {
         if (cancel) {
             JOptionPane.showMessageDialog(this, "Cadastro de computador cancelado.");
         }
+        return null;
     }
 
-    private void cadastrarCelular() {
+    private Produto cadastrarCelular() {
         boolean cancel = false;
 
         DadosSingleton dados = DadosSingleton.getInstance();
@@ -362,7 +373,7 @@ public class VendedorFrame extends JFrame {
                 dados.saveProduto(celular, vendedor);
 
                 JOptionPane.showMessageDialog(this, "Celular cadastrado com sucesso.");
-                break;
+                return celular;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Entrada inválida.");
             }
@@ -370,9 +381,10 @@ public class VendedorFrame extends JFrame {
         if (cancel) {
             JOptionPane.showMessageDialog(this, "Cadastro de celular cancelado.");
         }
+        return null;
     }
 
-    private void cadastrarCarro() {
+    private Produto cadastrarCarro() {
         boolean cancel = false;
 
         DadosSingleton dados = DadosSingleton.getInstance();
@@ -431,7 +443,7 @@ public class VendedorFrame extends JFrame {
                 dados.saveProduto(carro, vendedor);
 
                 JOptionPane.showMessageDialog(this, "Carro cadastrado com sucesso.");
-                break;
+                return carro;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Entrada inválida.");
             }
@@ -440,9 +452,10 @@ public class VendedorFrame extends JFrame {
         if (cancel) {
             JOptionPane.showMessageDialog(this, "Cadastro de carro cancelado.");
         }
+        return null;
     }
 
-    private void cadastrarMoto() {
+    private Produto cadastrarMoto() {
         boolean cancel = false;
 
         DadosSingleton dados = DadosSingleton.getInstance();
@@ -493,7 +506,7 @@ public class VendedorFrame extends JFrame {
                 dados.saveProduto(moto, vendedor);
 
                 JOptionPane.showMessageDialog(this, "Moto cadastrada com sucesso.");
-                break;
+                return moto;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Entrada inválida.");
             }
@@ -502,10 +515,10 @@ public class VendedorFrame extends JFrame {
         if (cancel) {
             JOptionPane.showMessageDialog(this, "Cadastro de carro cancelado.");
         }
-        
+        return null;
     }
 
-    private void cadastrarFogao() {
+    private Produto cadastrarFogao() {
         boolean cancel = false;
 
         DadosSingleton dados = DadosSingleton.getInstance();
@@ -571,7 +584,7 @@ public class VendedorFrame extends JFrame {
 				dados.saveProduto(fogao, vendedor);
 
                 JOptionPane.showMessageDialog(this, "Fogão cadastrado com sucesso.");
-                break;
+                return fogao;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Entrada inválida.");
             }
@@ -580,7 +593,7 @@ public class VendedorFrame extends JFrame {
         if (cancel) {
             JOptionPane.showMessageDialog(this, "Cadastro de fogão cancelado.");
         }
-
+        return null;
     }
 
     private String inputWithCheck(String message) {

@@ -118,7 +118,7 @@ public class ClienteFrame extends JFrame {
             message.append("Total: ").append(total);
             message.append("\n\nEscolha um método de pagamento:");
     
-            String[] opcoesPagamento = {"Cartão", "Dinheiro", "PayPal"};
+            String[] opcoesPagamento = {"Cartão", "Dinheiro", "PayPal", "Cancelar"};
             int metodoPagamento = JOptionPane.showOptionDialog(this, message.toString(), "Finalizar Compra",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
                     null, opcoesPagamento, opcoesPagamento[0]);
@@ -148,14 +148,20 @@ public class ClienteFrame extends JFrame {
                 try {
                     verificarSaldo(cliente.getSaldo(), total);
                     String mensagemPagamento = pagamento.pagar(total);
-                    JOptionPane.showMessageDialog(this, mensagemPagamento, "Pagamento Realizado", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, mensagemPagamento, "Pagamento Realizado com Sucesso!", JOptionPane.INFORMATION_MESSAGE);
     
                     for (Produto produto : carrinho) {
                         for (Usuario usuario : dados.getUsuarios()) {
                             if (usuario instanceof Vendedor) {
-                                if (((Vendedor) usuario).getProdutos().contains(produto)) {
+                                // if (((Vendedor) usuario).getProdutos().contains(produto)) {
+                                //     usuario.adicionarSaldo(produto.getPreco());
+                                //     ((Vendedor) usuario).getProdutos().remove(produto);
+                                // }
+                                Vendedor vendedor = (Vendedor) usuario;
+                                if (vendedor.getProdutos().contains(produto)) {
                                     usuario.adicionarSaldo(produto.getPreco());
-                                    ((Vendedor) usuario).getProdutos().remove(produto);
+                                    vendedor.removerProduto(produto);
+                                    produto.notificarObserver("O Produto ID -> " +produto.getIdProduto()+ " foi comprado pelo cliente -> " +cliente.getNome());
                                 }
                             }
                         }
@@ -165,7 +171,7 @@ public class ClienteFrame extends JFrame {
                     carrinho.clear();
                     dados.saveUsers();
                     dados.saveEstoque();
-                    JOptionPane.showMessageDialog(this, "Compra finalizada com sucesso.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    // JOptionPane.showMessageDialog(this, "Compra finalizada com sucesso.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
     
                 } catch (ExcecaoSaldoInsuficiente e) {
                     JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
